@@ -14,7 +14,8 @@
     "typecheck": "pnpm --dir apps/web typecheck",
     "test": "pnpm --dir apps/web test",
     "task01:check": "./scripts/check-task-01-readiness.sh",
-    "db:migrate:smoke": "supabase db reset"
+    "db:migrate:smoke": "supabase db reset",
+    "db:test:rls": "supabase test db test/rls"
   },
   "devDependencies": {
     "vercel": "^54.1.0"
