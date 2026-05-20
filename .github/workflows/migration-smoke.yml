@@ -1,6 +1,7 @@
 name: migration-smoke
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
