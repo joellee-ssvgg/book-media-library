@@ -1,6 +1,13 @@
 name: migration-smoke
 
 on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - "supabase/**"
+      - ".github/workflows/migration-smoke.yml"
   pull_request:
     paths:
       - "supabase/**"
