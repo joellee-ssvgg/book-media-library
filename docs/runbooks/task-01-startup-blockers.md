@@ -1,6 +1,6 @@
 # Task 01 Startup Blockers
 
-更新时间: 2026-05-17
+更新时间: 2026-05-20
 
 ## 依据
 
@@ -15,45 +15,44 @@
 | 工作目录 | `/Users/jeollee/Documents/Codex/书影库` |
 | Node | `v24.15.0` |
 | pnpm | `10.33.2` |
-| Docker daemon | `29.4.1` |
+| Docker daemon | `docker info` 已可连接 Docker Desktop daemon，Server Version `29.4.1` |
 | Supabase CLI | `2.98.2` |
-| GitHub CLI | 已登录 `joellee-ssvgg`，具备 `repo` scope |
+| GitHub CLI | 已登录 `joellee-ssvgg`，具备 `repo` 与 `workflow` scope |
 | GitHub 仓库 | 已创建私有仓库 `joellee-ssvgg/book-media-library`，本地 `origin` 已配置 |
 | Next.js 骨架 | `apps/web` 已生成，Next `16.2.6` |
-| Vercel CLI | 已作为 root devDependency 安装，`pnpm exec vercel --version` 为 `54.1.0` |
+| Vercel CLI | 已作为 root devDependency 安装，`pnpm exec vercel --version` 为 `54.1.0`，`pnpm exec vercel whoami --non-interactive` 返回 `leejoel376-7980` |
 | 环境变量模板 | `.env.example` 已生成，不含真实密钥 |
+| 本地 dev 环境文件 | `.env.local` 已创建且被 `.gitignore` 忽略；已填入 Task 01 必需 dev 环境变量 |
 
 ## 当前已解除
 
 | 项 | 当前证据 |
 | --- | --- |
 | GitHub 仓库缺失 | 已按授权创建私有仓库 `joellee-ssvgg/book-media-library`，本地 `origin` 已配置为 `https://github.com/joellee-ssvgg/book-media-library.git` |
+| Docker daemon 不可达 | 已启动 Docker Desktop，`docker info` 可连接 daemon |
+| GitHub CLI 缺 `workflow` scope / 远端分支未推送 | 已通过 `gh auth refresh -h github.com --scopes repo,workflow` 补齐 scope，并完成 `git push -u origin dev` 与 `git push -u origin main` |
+| Vercel CLI 认证误判 | 已修正 `scripts/check-task-01-readiness.sh`，直接用 `whoami --non-interactive` 验证本机登录态 |
+| Supabase CLI 未登录 / 无项目访问 | 已完成 `supabase login --no-browser`，`supabase projects list` 可列出项目 `bnmaolnecfywfbozsrxx` |
+| `.env.local` 文件缺失 | 已创建 `.env.local`，权限为 `600`，已写入真实 Supabase dev 值 |
+| 外部 API / SaaS 密钥缺失 | 已写入 `TMDB_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN` |
 
-## 当前已排除
+## 当前未解除
 
 | 项 | 当前证据 |
 | --- | --- |
-| Supabase 登录态 / 候选项目 | `supabase projects list` 返回 `Access token not provided`，当前无法列出或绑定 Supabase 项目 |
-| Vercel 登录态 / 候选项目 | `pnpm exec vercel whoami` 触发设备登录，未完成认证；当前无 `VERCEL_TOKEN`，也无 `~/.vercel/auth.json` |
-| Task 01 门禁脚本 | `./scripts/check-task-01-readiness.sh` 返回 `NOT READY: blockers=3 warnings=0` |
+| 无 | `pnpm task01:check` 返回 `READY: Task 01 startup gates passed. warnings=0` |
 
 ## 阻断项登记
 
 | 阻断项 | 影响的 Task | 期望由谁解除 | 已尝试的替代方案 |
 | --- | --- | --- | --- |
-| 没有 Supabase dev/staging/prod 项目访问与 dev 环境密钥；当前 Supabase CLI 也未登录 | Task 01: profiles、auth、RLS、pgTAP、migration smoke | Joel 提供 Supabase 项目与 dev `.env.local` 必需值，或先完成 `supabase login` 并明确授权按 CLI 流程协助创建项目 | 未替代。不能用无 Supabase 的本地假实现推进 |
-| 没有 Vercel 项目接入信息；Vercel CLI 已安装但认证未完成 | Task 01 CI/preview 链路，Task 17 公开页和后续 staging 验收 | Joel 完成 Vercel 设备登录，或提供 `VERCEL_TOKEN` 后由 Agent 继续创建/接入项目 | 未替代。不能把 P0 验收改成本地预览 |
-| 没有 Upstash Redis、Sentry、TMDB API、Google Books 可选 key 等环境变量 | Task 06、Task 20、P0 监控与限流 | Joel 提供 dev/staging 环境变量，或明确哪些 SaaS 由 Agent 协助创建 | 未替代。工作包不允许用兜底设计跳过 |
-| 没有 `.env.local` 真实 dev 值 | Task 01 启动序列与安全检查 | Joel 提供真实 dev 值，或在 Supabase/Vercel/Upstash/Sentry/TMDB 创建完成后由 Agent 写入本机 `.env.local` | 未替代。`.env.example` 仅是模板，不冒充可运行环境 |
+| 无 | Task 01 启动门禁 | 已解除 | 未使用替代方案 |
 
 ## 当前结论
 
-Task 01 暂不能开工写业务代码或 migration。GitHub 私有仓库已经创建；剩余阻断项集中在 Supabase/Vercel 认证、`.env.local` 真实 dev 值，以及 Upstash/Sentry/TMDB 等外部服务密钥。
+Task 01 启动门禁已通过。GitHub 私有仓库已经创建，本地 `main`/`dev` 已推送到远端；Docker daemon 已恢复；Vercel CLI 已可认证；Supabase CLI 已登录且 `.env.local` 已写入真实 dev 值；TMDB、Upstash、Sentry 必需环境变量已补齐。
 
 ## 下一步入口
 
-确认以下路径之一:
-
-1. Supabase: 提供 `SUPABASE_ACCESS_TOKEN`，或在本机完成 `supabase login` 后让 Agent 继续按 CLI 创建/绑定 dev 项目。
-2. Vercel: 提供 `VERCEL_TOKEN`，或完成 Vercel CLI 设备登录后让 Agent 继续创建/绑定项目。
-3. 环境变量: 在 Supabase/Vercel/Upstash/Sentry/TMDB 创建完成后，由 Agent 写入本机 `.env.local`；不得把 `.env.example` 当作可运行凭据。
+1. 进入 Task 01 实现前重新运行 `pnpm task01:check`，确认本机 Docker / SaaS 登录态未漂移。
+2. 开始业务代码或 migration 前，按任务要求继续运行相关 lint / typecheck / test / build 验证。

@@ -36,6 +36,7 @@ run_with_timeout() {
   wait "$pid"
   local status=$?
   kill "$watchdog" >/dev/null 2>&1
+  wait "$watchdog" 2>/dev/null || true
   return "$status"
 }
 
@@ -117,8 +118,27 @@ else
 fi
 
 if have_cmd gh; then
-  if gh auth status >/dev/null 2>&1; then
+  gh_auth_output="$(gh auth status -h github.com 2>&1)"
+  gh_auth_status=$?
+  if [ "$gh_auth_status" -eq 0 ]; then
     pass "GitHub CLI is authenticated"
+    gh_scopes_line="$(printf '%s\n' "$gh_auth_output" | sed -n 's/.*Token scopes: //p' | tail -n 1)"
+    if [ -n "$gh_scopes_line" ]; then
+      required_gh_scopes=(repo workflow)
+      missing_gh_scopes=()
+      for scope in "${required_gh_scopes[@]}"; do
+        if printf '%s\n' "$gh_scopes_line" | grep -Fq "'$scope'"; then
+          pass "GitHub CLI token has $scope scope"
+        else
+          missing_gh_scopes+=("$scope")
+        fi
+      done
+      if [ "${#missing_gh_scopes[@]}" -gt 0 ]; then
+        blocker "GitHub CLI token is missing required scopes: ${missing_gh_scopes[*]}"
+      fi
+    else
+      blocker "GitHub CLI token scopes could not be inspected"
+    fi
   else
     blocker "GitHub CLI is not authenticated"
   fi
@@ -126,28 +146,20 @@ else
   blocker "GitHub CLI is not installed"
 fi
 
-vercel_authenticated=false
-vercel_auth_file="$HOME/.vercel/auth.json"
-if [ -n "${VERCEL_TOKEN:-}" ]; then
-  vercel_authenticated=token
-elif [ -f "$vercel_auth_file" ]; then
-  vercel_authenticated=file
-fi
-
 if have_cmd vercel; then
   pass "Vercel CLI $(vercel --version 2>/dev/null | tail -n 1)"
-  if [ "$vercel_authenticated" = "token" ] && run_with_timeout 10 vercel whoami --non-interactive --token "$VERCEL_TOKEN" >/dev/null 2>&1; then
+  if [ -n "${VERCEL_TOKEN:-}" ] && run_with_timeout 10 vercel whoami --non-interactive --token "$VERCEL_TOKEN" >/dev/null 2>&1; then
     pass "Vercel CLI is authenticated with VERCEL_TOKEN"
-  elif [ "$vercel_authenticated" = "file" ] && run_with_timeout 10 vercel whoami --non-interactive >/dev/null 2>&1; then
+  elif run_with_timeout 10 vercel whoami --non-interactive >/dev/null 2>&1; then
     pass "Vercel CLI is authenticated"
   else
     blocker "Vercel CLI is installed but not authenticated or timed out"
   fi
 elif have_cmd pnpm && pnpm exec vercel --version >/tmp/task01-vercel-version.txt 2>/tmp/task01-vercel-version.err; then
   pass "Vercel CLI via pnpm exec $(tail -n 1 /tmp/task01-vercel-version.txt)"
-  if [ "$vercel_authenticated" = "token" ] && run_with_timeout 10 pnpm exec vercel whoami --non-interactive --token "$VERCEL_TOKEN" >/dev/null 2>&1; then
+  if [ -n "${VERCEL_TOKEN:-}" ] && run_with_timeout 10 pnpm exec vercel whoami --non-interactive --token "$VERCEL_TOKEN" >/dev/null 2>&1; then
     pass "Vercel CLI is authenticated with VERCEL_TOKEN"
-  elif [ "$vercel_authenticated" = "file" ] && run_with_timeout 10 pnpm exec vercel whoami --non-interactive >/dev/null 2>&1; then
+  elif run_with_timeout 10 pnpm exec vercel whoami --non-interactive >/dev/null 2>&1; then
     pass "Vercel CLI is authenticated"
   else
     blocker "Vercel CLI is installed but not authenticated or timed out"
