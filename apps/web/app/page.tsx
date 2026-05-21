@@ -13,6 +13,8 @@ export default function Home() {
           </div>
           <nav className="flex flex-wrap gap-4 text-sm font-medium text-[#315f53]">
             <a href="/onboarding">Onboarding</a>
+            <a href="/library">我的库</a>
+            <a href="/dashboard">Dashboard</a>
             <a href="/add/book">添加书籍</a>
             <a href="/add/movie">添加电影</a>
           </nav>
