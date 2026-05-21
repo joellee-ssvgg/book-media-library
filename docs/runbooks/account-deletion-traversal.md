@@ -84,6 +84,20 @@ This runbook tracks tables that contain account-owned data and must be handled b
 - Content risk: entry visibility transitions and job state used to backfill activity visibility snapshots.
 - Deletion handling: Task18 must remove rows owned by the profile before or with activity tables.
 
+## Task11 additions
+
+### `public.lists`
+
+- Owner key: `profile_id`
+- Content risk: user-authored list title, description, visibility, ordering preference, and cover strategy. P0 keeps this schema-only; P1 may expose list workflows.
+- Deletion handling: Task18 must remove rows owned by the profile before or with list items. Public list retention requires an explicit product decision before P1 enablement.
+
+### `public.list_items`
+
+- Owner key: `profile_id`
+- Content risk: associations between user-owned lists and entries or works, including user-authored item notes and ordering.
+- Deletion handling: Task18 must remove rows owned by the profile before or with `lists`. Item notes must not be retained after GDPR hard deletion.
+
 ## Required verification when Task18 lands
 
 - Owner deletion removes `user_private_notes`.
@@ -92,4 +106,5 @@ This runbook tracks tables that contain account-owned data and must be handled b
 - Owner deletion removes `tags`, `entry_tags`, and `annotation_tags`.
 - Owner deletion removes `progress_logs` and `progress_snapshots`.
 - Owner deletion removes `activity_events`, `private_activity_log`, `event_outbox`, and `events_visibility_sync_jobs`.
+- Owner deletion removes `lists` and `list_items`.
 - Public views and APIs do not retain deleted-profile Task07 content.
