@@ -98,6 +98,14 @@ This runbook tracks tables that contain account-owned data and must be handled b
 - Content risk: associations between user-owned lists and entries or works, including user-authored item notes and ordering.
 - Deletion handling: Task18 must remove rows owned by the profile before or with `lists`. Item notes must not be retained after GDPR hard deletion.
 
+## Task12 additions
+
+### `public.notifications`
+
+- Owner key: `recipient_profile_id`
+- Content risk: private notification payloads, read state, actor linkage, and system-generated notification context. P0 keeps this schema-only; P3 may expose notification workflows.
+- Deletion handling: Task18 must remove rows where the profile is the recipient. Rows where the profile appears as `actor_profile_id` require anonymization or removal before P3 enablement.
+
 ## Required verification when Task18 lands
 
 - Owner deletion removes `user_private_notes`.
@@ -107,4 +115,5 @@ This runbook tracks tables that contain account-owned data and must be handled b
 - Owner deletion removes `progress_logs` and `progress_snapshots`.
 - Owner deletion removes `activity_events`, `private_activity_log`, `event_outbox`, and `events_visibility_sync_jobs`.
 - Owner deletion removes `lists` and `list_items`.
+- Owner deletion removes recipient `notifications` and handles actor-linked notification references.
 - Public views and APIs do not retain deleted-profile Task07 content.
