@@ -57,6 +57,33 @@ This runbook tracks tables that contain account-owned data and must be handled b
 - Content risk: derived latest progress state rebuilt from `progress_logs`.
 - Deletion handling: Task18 may delete rows owned by the profile after or with `progress_logs`. Snapshots are rebuildable and must not be treated as the source of truth.
 
+## Task10 additions
+
+### `public.activity_events`
+
+- Owner key: `profile_id`
+- Content risk: derived application activity stream for public, unlisted, and followers-visible user events. It includes progress-derived payloads and visibility snapshots.
+- Deletion handling: Task18 must remove or anonymize rows owned by the profile. Activity rows are rebuildable from domain events and must not be treated as the source of truth.
+- Public boundary: public feeds must use `public_activity_feed_v`, which is built from activity rows without joining `user_entries` or `user_private_notes` at query time.
+
+### `public.private_activity_log`
+
+- Owner key: `profile_id`
+- Content risk: physically isolated private activity stream for private entries and progress events.
+- Deletion handling: Task18 must hard-delete rows owned by the profile. These rows must never be surfaced in public activity feeds, recommendations, or anonymous APIs.
+
+### `public.event_outbox`
+
+- Owner key: `profile_id`
+- Content risk: fallback payloads and error details for failed snapshot or activity dispatch from progress-domain events.
+- Deletion handling: Task18 must remove rows owned by the profile before or with `progress_logs`. Dead-letter rows may contain diagnostic text and must not be retained after GDPR hard deletion.
+
+### `public.events_visibility_sync_jobs`
+
+- Owner key: `profile_id`
+- Content risk: entry visibility transitions and job state used to backfill activity visibility snapshots.
+- Deletion handling: Task18 must remove rows owned by the profile before or with activity tables.
+
 ## Required verification when Task18 lands
 
 - Owner deletion removes `user_private_notes`.
@@ -64,4 +91,5 @@ This runbook tracks tables that contain account-owned data and must be handled b
 - Owner deletion removes or anonymizes `annotations.content`.
 - Owner deletion removes `tags`, `entry_tags`, and `annotation_tags`.
 - Owner deletion removes `progress_logs` and `progress_snapshots`.
+- Owner deletion removes `activity_events`, `private_activity_log`, `event_outbox`, and `events_visibility_sync_jobs`.
 - Public views and APIs do not retain deleted-profile Task07 content.

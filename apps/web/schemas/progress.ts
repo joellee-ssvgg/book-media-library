@@ -34,7 +34,7 @@ export type RecordProgressActionState =
       progressLogId: string;
       entryId: string;
       progressModelId: string;
-      snapshot: Record<string, unknown>;
+      snapshot: Record<string, unknown> | null;
     };
 
 export const initialRecordProgressActionState: RecordProgressActionState = {

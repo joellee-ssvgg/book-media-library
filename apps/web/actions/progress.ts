@@ -10,7 +10,8 @@ type RecordProgressRpcPayload = {
   progress_log_id: string;
   entry_id: string;
   progress_model_id: string;
-  snapshot: Record<string, unknown>;
+  snapshot: Record<string, unknown> | null;
+  outbox_ids: string[];
 };
 
 function parsePayloadJson(rawPayload: FormDataEntryValue | null) {
