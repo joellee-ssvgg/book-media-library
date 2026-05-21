@@ -43,6 +43,7 @@ type MspfEntry = {
   visibility_scope: "private" | "unlisted" | "followers" | "public";
   field_visibility_json?: Record<string, string>;
   favorite?: boolean;
+  imported?: boolean;
   started_at?: string | null;
   finished_at?: string | null;
 };
@@ -137,6 +138,7 @@ export function mspfToImportPayload(
       status: entry.status,
       rating_x10: defined(entry.rating_x10),
       favorite: entry.favorite,
+      imported: entry.imported,
       visibility_scope: entry.visibility_scope,
       field_visibility_json: entry.field_visibility_json,
       started_at: defined(entry.started_at),

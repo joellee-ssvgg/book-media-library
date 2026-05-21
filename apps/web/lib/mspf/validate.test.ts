@@ -44,6 +44,7 @@ const validMspf = {
       rating_x10: 45,
       visibility_scope: "private",
       favorite: true,
+      imported: true,
     },
   ],
 };
@@ -69,6 +70,7 @@ describe("MSPF validator", () => {
           page_count: 352,
           rating_x10: 45,
           favorite: true,
+          imported: true,
         },
       ],
     });

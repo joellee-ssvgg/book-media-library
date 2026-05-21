@@ -9,9 +9,10 @@ export default function PublicSettingsPage() {
             <p className="text-xs uppercase tracking-[0.18em] text-[#6c675f]">P0 Task 17</p>
             <h1 className="mt-1 text-2xl font-semibold">公开主页设置</h1>
           </div>
-          <a className="text-sm font-medium text-[#315f53]" href="/library">
-            我的库
-          </a>
+          <div className="flex flex-wrap gap-4 text-sm font-medium text-[#315f53]">
+            <a href="/library">我的库</a>
+            <a href="/settings/data/export">数据导出</a>
+          </div>
         </header>
 
         <section className="grid gap-3">

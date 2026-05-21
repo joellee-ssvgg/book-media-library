@@ -79,6 +79,7 @@
         "language": { "type": ["string", "null"] },
         "edition_type": {
           "enum": [
+            "default",
             "paperback",
             "hardcover",
             "ebook",

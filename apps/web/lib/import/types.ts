@@ -23,6 +23,7 @@ export type ImportItem = {
   status: string;
   rating_x10?: number;
   favorite?: boolean;
+  imported?: boolean;
   visibility_scope?: "private" | "unlisted" | "followers" | "public";
   field_visibility_json?: Record<string, string>;
   started_at?: string;

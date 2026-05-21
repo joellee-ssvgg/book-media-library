@@ -18,6 +18,7 @@
     "db:test:rls": "supabase test db test/rls"
   },
   "devDependencies": {
+    "tsx": "4.21.0",
     "vercel": "^54.1.0"
   }
 }

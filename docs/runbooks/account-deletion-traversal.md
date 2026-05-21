@@ -1,6 +1,6 @@
 # Account Deletion Traversal
 
-This runbook tracks tables that contain account-owned data and must be handled by the account deletion/export implementation task. It is a traversal register, not the deletion implementation.
+This runbook tracks tables that contain account-owned data and are handled by the Task18 account deletion/export implementation. It is a traversal register plus verification pointer; the implementation lives in `supabase/migrations/202605221000_task18_mspf_export_deletion.sql`.
 
 ## Task07 additions
 
@@ -132,7 +132,9 @@ This runbook tracks tables that contain account-owned data and must be handled b
 - Content risk: Task13 adds retry scheduling, max attempts, dead-letter state, and Sentry alert payloads to the existing visibility sync job state.
 - Deletion handling: Task18 must remove Task13 retry and dead-letter diagnostics together with the visibility sync job row.
 
-## Required verification when Task18 lands
+## Task18 verification coverage
+
+Primary test file: `test/rls/task18_mspf_export_deletion.sql`.
 
 - Owner deletion removes `user_private_notes`.
 - Owner deletion removes or anonymizes `user_entries.review`.
@@ -144,3 +146,5 @@ This runbook tracks tables that contain account-owned data and must be handled b
 - Owner deletion removes recipient `notifications` and handles actor-linked notification references.
 - Owner deletion removes `import_jobs`, `export_jobs`, `cover_cache_jobs`, and all job dead-letter / Sentry diagnostic payloads.
 - Public views and APIs do not retain deleted-profile Task07 content.
+- Export channel requires a completed `task18_mspf_export` job before soft deletion and keeps username routes at `410 Gone`.
+- GDPR channel skips export, enters a 24-hour cooling period, and hard-deletes only after the due processor runs.
