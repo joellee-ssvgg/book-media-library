@@ -103,6 +103,49 @@ describe("Provider Adapter", () => {
     });
   });
 
+  it("normalizes TMDB movie records with runtime and poster metadata", async () => {
+    const fetchImpl: ProviderFetch = async () =>
+      jsonResponse({
+        id: 27205,
+        title: "Inception",
+        original_title: "Inception",
+        release_date: "2010-07-16",
+        original_language: "en",
+        overview: "A thief steals corporate secrets through dream-sharing technology.",
+        poster_path: "/inception.jpg",
+        runtime: 148,
+      });
+    const provider = createTmdbMovieProvider({
+      fetch: fetchImpl,
+      tmdbApiKey: "test-tmdb-key",
+    });
+    const result = await provider.fetch("27205");
+
+    expect(result.ok).toBe(true);
+
+    if (!result.ok) {
+      return;
+    }
+
+    expect(result.value).toMatchObject({
+      provider: "tmdb",
+      mediaType: "movie",
+      externalId: "27205",
+      title: "Inception",
+      releaseYear: 2010,
+      language: "en",
+      coverUrl: "https://image.tmdb.org/t/p/w500/inception.jpg",
+      runtimeMinutes: 148,
+      externalIds: [
+        {
+          source: "tmdb",
+          externalId: "27205",
+          sourceUrl: "https://www.themoviedb.org/movie/27205",
+        },
+      ],
+    });
+  });
+
   it("uses memory cache for repeated provider queries", async () => {
     let calls = 0;
     const candidate: CanonicalCandidate = {

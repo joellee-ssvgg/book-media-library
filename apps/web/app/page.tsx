@@ -14,6 +14,7 @@ export default function Home() {
           <nav className="flex flex-wrap gap-4 text-sm font-medium text-[#315f53]">
             <a href="/onboarding">Onboarding</a>
             <a href="/add/book">添加书籍</a>
+            <a href="/add/movie">添加电影</a>
           </nav>
         </header>
 

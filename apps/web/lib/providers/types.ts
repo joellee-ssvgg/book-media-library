@@ -55,6 +55,7 @@ export type CanonicalCandidate = {
   description?: string;
   coverUrl?: string;
   language?: string;
+  runtimeMinutes?: number;
   creators: string[];
   externalIds: ExternalIdentifier[];
   raw: unknown;

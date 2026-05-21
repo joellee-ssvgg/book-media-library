@@ -34,6 +34,7 @@ function normalizeTmdbMovie(raw: Record<string, unknown>): CanonicalCandidate {
     description: firstText(raw.overview),
     coverUrl: posterUrl(firstText(raw.poster_path)),
     language: firstText(raw.original_language),
+    runtimeMinutes: asInteger(raw.runtime),
     creators: [],
     externalIds: [
       {
