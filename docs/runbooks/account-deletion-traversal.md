@@ -22,9 +22,30 @@ This runbook tracks tables that contain account-owned data and must be handled b
 - Content risk: user-authored quotes, highlights, notes, media locations, and search vectors.
 - Deletion handling: Task18 must delete or anonymize rows owned by the profile. Private annotations should be hard-deleted; public annotations require an explicit product decision before retention.
 
+## Task08 additions
+
+### `public.tags`
+
+- Owner key: `profile_id`
+- Content risk: user-authored organization labels, AI/imported tag provenance, aliases, and merge history via `canonical_tag_id`.
+- Deletion handling: Task18 must remove rows owned by the profile, including aliases. Public tag presentation must be rebuilt from retained public entry/list data only if the product explicitly allows retention.
+
+### `public.entry_tags`
+
+- Owner key: `profile_id`
+- Content risk: associations between private library entries and user-owned tags.
+- Deletion handling: Task18 must remove rows owned by the profile before or with `user_entries`.
+
+### `public.annotation_tags`
+
+- Owner key: `profile_id`
+- Content risk: associations between annotations and user-owned tags, including tags on private annotations.
+- Deletion handling: Task18 must remove rows owned by the profile before or with `annotations`.
+
 ## Required verification when Task18 lands
 
 - Owner deletion removes `user_private_notes`.
 - Owner deletion removes or anonymizes `user_entries.review`.
 - Owner deletion removes or anonymizes `annotations.content`.
+- Owner deletion removes `tags`, `entry_tags`, and `annotation_tags`.
 - Public views and APIs do not retain deleted-profile Task07 content.
