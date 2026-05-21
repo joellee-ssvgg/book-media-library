@@ -13,7 +13,9 @@
     "lint": "pnpm --dir apps/web lint",
     "typecheck": "pnpm --dir apps/web typecheck",
     "test": "pnpm --dir apps/web test",
+    "test:mspf:schema": "pnpm tsx scripts/validate-mspf.ts test/fixtures/valid-mspf.json",
     "task01:check": "./scripts/check-task-01-readiness.sh",
+    "task19:check": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:mspf:schema && pnpm db:migrate:smoke && pnpm db:test:rls",
     "db:migrate:smoke": "supabase db reset",
     "db:test:rls": "supabase test db test/rls"
   },

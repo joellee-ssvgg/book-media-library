@@ -1,0 +1,45 @@
+{
+  "format": "MSPF",
+  "version": "1.0.0",
+  "exported_at": "2026-05-21T00:00:00.000Z",
+  "profile": {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "username": "task19_fixture"
+  },
+  "works": [
+    {
+      "id": "00000000-0000-0000-0000-000000000101",
+      "media_type": "book",
+      "canonical_title": "Task19 Fixture Book",
+      "first_release_year": 2026,
+      "external_ids": [
+        {
+          "source": "openlibrary",
+          "external_id": "/works/OL-TASK19W"
+        }
+      ]
+    }
+  ],
+  "editions": [
+    {
+      "id": "00000000-0000-0000-0000-000000000201",
+      "work_id": "00000000-0000-0000-0000-000000000101",
+      "title": "Task19 Fixture Book",
+      "language": "zh",
+      "edition_type": "default",
+      "page_count": 256,
+      "is_default": true
+    }
+  ],
+  "entries": [
+    {
+      "id": "00000000-0000-0000-0000-000000000301",
+      "work_id": "00000000-0000-0000-0000-000000000101",
+      "edition_id": "00000000-0000-0000-0000-000000000201",
+      "status": "reading",
+      "rating_x10": 45,
+      "visibility_scope": "private",
+      "favorite": true
+    }
+  ]
+}
