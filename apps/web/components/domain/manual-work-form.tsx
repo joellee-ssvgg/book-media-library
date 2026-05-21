@@ -3,7 +3,11 @@
 import { useActionState } from "react";
 
 import { createManualWorkAction } from "@/actions/manual-work";
+import { t } from "@/lib/i18n";
+import { listEnabledRegistries } from "@/lib/registry";
 import { initialManualWorkActionState } from "@/schemas/manual-work";
+
+const mediaOptions = listEnabledRegistries();
 
 function fieldError(errors: string[] | undefined) {
   if (!errors?.length) {
@@ -37,7 +41,7 @@ export function ManualWorkForm() {
       <div className="grid gap-4 md:grid-cols-[160px_1fr_120px]">
         <div className="grid gap-2">
           <label className="text-sm font-medium" htmlFor="mediaType">
-            类型
+            {t("ui.manual_work.media_type")}
           </label>
           <select
             className="h-10 border border-[#c9c2b3] bg-white px-3 text-sm outline-none focus:border-[#315f53]"
@@ -45,8 +49,11 @@ export function ManualWorkForm() {
             id="mediaType"
             name="mediaType"
           >
-            <option value="book">书</option>
-            <option value="movie">电影</option>
+            {mediaOptions.map((registry) => (
+              <option key={registry.id} value={registry.id}>
+                {registry.iconEmoji} {t(registry.labelKey)}
+              </option>
+            ))}
           </select>
           {fieldError(state.fieldErrors?.mediaType)}
         </div>

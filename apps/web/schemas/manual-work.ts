@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { isEnabledMediaTypeId, type EnabledMediaTypeId } from "@/lib/registry";
+
 const optionalText = z
   .string()
   .trim()
@@ -20,7 +22,11 @@ const optionalYear = z.preprocess(
 export const manualWorkFormSchema = z
   .object({
     accessToken: z.string().trim().min(1, "需要已登录用户的 Supabase access token"),
-    mediaType: z.enum(["book", "movie"]),
+    mediaType: z
+      .string()
+      .trim()
+      .refine(isEnabledMediaTypeId, "当前 P0 阶段只支持书和电影")
+      .transform((value): EnabledMediaTypeId => value),
     title: z.string().trim().min(1, "标题不能为空").max(300),
     year: optionalYear,
     originalTitle: optionalText,
