@@ -106,6 +106,32 @@ This runbook tracks tables that contain account-owned data and must be handled b
 - Content risk: private notification payloads, read state, actor linkage, and system-generated notification context. P0 keeps this schema-only; P3 may expose notification workflows.
 - Deletion handling: Task18 must remove rows where the profile is the recipient. Rows where the profile appears as `actor_profile_id` require anonymization or removal before P3 enablement.
 
+## Task13 additions
+
+### `public.import_jobs`
+
+- Owner key: `profile_id`
+- Content risk: import source, import config, payloads, result summaries, retry errors, and dead-letter diagnostics. Import jobs may include original MSPF or CSV metadata and must stay owner-only.
+- Deletion handling: Task18 must remove rows owned by the profile before or with imported domain rows. Dead-letter rows and Sentry payloads must not retain profile-owned import diagnostics after GDPR hard deletion.
+
+### `public.export_jobs`
+
+- Owner key: `profile_id`
+- Content risk: export format, payloads, result summaries, retry errors, and dead-letter diagnostics. Export jobs are part of data sovereignty and may reveal what private data was prepared for export.
+- Deletion handling: Task18 must remove rows owned by the profile after any required export handoff completes or is cancelled. GDPR hard deletion must remove export job payloads and dead-letter diagnostics.
+
+### `public.cover_cache_jobs`
+
+- Owner key: `profile_id`
+- Content risk: cover source URLs, cache payloads, work/edition associations, retry errors, and dead-letter diagnostics.
+- Deletion handling: Task18 must remove rows owned by the profile. Cached cover artifacts outside Postgres need their own deletion traversal when storage is enabled.
+
+### `public.events_visibility_sync_jobs` Task13 fields
+
+- Owner key: `profile_id`
+- Content risk: Task13 adds retry scheduling, max attempts, dead-letter state, and Sentry alert payloads to the existing visibility sync job state.
+- Deletion handling: Task18 must remove Task13 retry and dead-letter diagnostics together with the visibility sync job row.
+
 ## Required verification when Task18 lands
 
 - Owner deletion removes `user_private_notes`.
@@ -116,4 +142,5 @@ This runbook tracks tables that contain account-owned data and must be handled b
 - Owner deletion removes `activity_events`, `private_activity_log`, `event_outbox`, and `events_visibility_sync_jobs`.
 - Owner deletion removes `lists` and `list_items`.
 - Owner deletion removes recipient `notifications` and handles actor-linked notification references.
+- Owner deletion removes `import_jobs`, `export_jobs`, `cover_cache_jobs`, and all job dead-letter / Sentry diagnostic payloads.
 - Public views and APIs do not retain deleted-profile Task07 content.
