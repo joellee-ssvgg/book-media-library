@@ -76,6 +76,9 @@ const zhCN = {
   },
   error: {
     entry_not_found: "条目不存在",
+    network: {
+      offline_write_disabled: "离线时写入已禁用，请联网后再提交。",
+    },
   },
 } as const;
 

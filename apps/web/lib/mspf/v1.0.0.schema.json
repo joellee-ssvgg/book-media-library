@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mspf.spec/v1.0.0.json",
+  "title": "Media Sovereignty Portable Format v1.0.0",
+  "type": "object",
+  "required": ["format", "version", "exported_at", "profile"],
+  "additionalProperties": false,
+  "properties": {
+    "format": { "const": "MSPF" },
+    "version": { "type": "string", "pattern": "^1\\.\\d+\\.\\d+$" },
+    "exported_at": { "type": "string", "format": "date-time" },
+    "app": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "app_name": { "type": "string" },
+        "app_version": { "type": "string" }
+      }
+    },
+    "profile": { "$ref": "#/$defs/Profile" },
+    "works": { "type": "array", "items": { "$ref": "#/$defs/Work" } },
+    "editions": { "type": "array", "items": { "$ref": "#/$defs/Edition" } },
+    "series": { "type": "array" },
+    "work_series": { "type": "array" },
+    "work_relations": { "type": "array" },
+    "persons": { "type": "array" },
+    "work_credits": { "type": "array" },
+    "entries": { "type": "array", "items": { "$ref": "#/$defs/Entry" } },
+    "private_notes": { "type": "array" },
+    "annotations": { "type": "array" },
+    "progress_logs": { "type": "array" },
+    "activity_events": { "type": "array" },
+    "tags": { "type": "array" },
+    "entry_tags": { "type": "array" },
+    "lists": { "type": "array" },
+    "list_items": { "type": "array" },
+    "metadata_json": { "type": "object" }
+  },
+  "$defs": {
+    "Profile": {
+      "type": "object",
+      "required": ["id", "username"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "username": { "type": "string" },
+        "display_name": { "type": ["string", "null"] },
+        "bio": { "type": ["string", "null"] },
+        "profile_visibility": { "enum": ["private", "unlisted", "followers", "public", null] }
+      }
+    },
+    "Work": {
+      "type": "object",
+      "required": ["id", "media_type", "canonical_title"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "media_type": { "enum": ["book", "movie", "tv", "music", "game", "comic"] },
+        "canonical_title": { "type": "string" },
+        "original_title": { "type": ["string", "null"] },
+        "localized_titles_json": { "type": "object" },
+        "description": { "type": ["string", "null"] },
+        "first_release_year": { "type": ["integer", "null"], "minimum": 1000, "maximum": 9999 },
+        "original_language": { "type": ["string", "null"] },
+        "metadata_json": { "type": "object" },
+        "external_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ExternalId" }
+        }
+      }
+    },
+    "Edition": {
+      "type": "object",
+      "required": ["id", "work_id", "is_default"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "work_id": { "type": "string", "format": "uuid" },
+        "title": { "type": ["string", "null"] },
+        "subtitle": { "type": ["string", "null"] },
+        "cover_url": { "type": ["string", "null"], "format": "uri" },
+        "language": { "type": ["string", "null"] },
+        "edition_type": {
+          "enum": [
+            "paperback",
+            "hardcover",
+            "ebook",
+            "audiobook",
+            "theatrical",
+            "tv_cut",
+            "director_cut",
+            "manga",
+            "tankobon",
+            null
+          ]
+        },
+        "publisher": { "type": ["string", "null"] },
+        "page_count": { "type": ["integer", "null"] },
+        "runtime_minutes": { "type": ["integer", "null"] },
+        "release_date": { "type": ["string", "null"], "format": "date" },
+        "is_default": { "type": "boolean" },
+        "metadata_json": { "type": "object" }
+      }
+    },
+    "Entry": {
+      "type": "object",
+      "required": ["id", "edition_id", "status", "visibility_scope"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "edition_id": { "type": "string", "format": "uuid" },
+        "work_id": { "type": "string", "format": "uuid" },
+        "status": {
+          "enum": [
+            "want_to_read",
+            "reading",
+            "finished",
+            "abandoned",
+            "want_to_watch",
+            "watching",
+            "watched"
+          ]
+        },
+        "rating_x10": {
+          "type": ["integer", "null"],
+          "enum": [null, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+        },
+        "review": { "type": ["string", "null"] },
+        "visibility_scope": { "enum": ["private", "unlisted", "followers", "public"] },
+        "field_visibility_json": {
+          "type": "object",
+          "additionalProperties": { "enum": ["private", "unlisted", "followers", "public"] }
+        },
+        "external_rating_json": { "type": ["object", "null"] },
+        "favorite": { "type": "boolean" },
+        "started_at": { "type": ["string", "null"] },
+        "finished_at": { "type": ["string", "null"] }
+      }
+    },
+    "ExternalId": {
+      "type": "object",
+      "required": ["source", "external_id"],
+      "properties": {
+        "source": { "type": "string" },
+        "external_id": { "type": "string" },
+        "source_url": { "type": ["string", "null"], "format": "uri" }
+      }
+    }
+  }
+}

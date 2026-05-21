@@ -76,6 +76,9 @@ const enUS = {
   },
   error: {
     entry_not_found: "Entry not found",
+    network: {
+      offline_write_disabled: "Offline writes are disabled. Reconnect before submitting.",
+    },
   },
 } as const;
 
