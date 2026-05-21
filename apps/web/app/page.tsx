@@ -15,6 +15,7 @@ export default function Home() {
             <a href="/onboarding">Onboarding</a>
             <a href="/library">我的库</a>
             <a href="/dashboard">Dashboard</a>
+            <a href="/settings/public">公开设置</a>
             <a href="/add/book">添加书籍</a>
             <a href="/add/movie">添加电影</a>
           </nav>
