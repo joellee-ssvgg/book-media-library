@@ -42,10 +42,26 @@ This runbook tracks tables that contain account-owned data and must be handled b
 - Content risk: associations between annotations and user-owned tags, including tags on private annotations.
 - Deletion handling: Task18 must remove rows owned by the profile before or with `annotations`.
 
+## Task09 additions
+
+### `public.progress_logs`
+
+- Owner key: `profile_id`
+- Content risk: permanent Domain event source for progress, sessions, completion, abandonment, public-class progress notes, payloads, and imported-history markers.
+- Deletion handling: Task18 must remove rows owned by the profile when executing GDPR hard deletion. During the 30-day recoverable window, these rows remain the rebuild source for snapshots and activity.
+- Public boundary: direct anonymous table access is not granted. Public reads must use controlled views that follow entry visibility and never join `user_private_notes`.
+
+### `public.progress_snapshots`
+
+- Owner key: `profile_id`
+- Content risk: derived latest progress state rebuilt from `progress_logs`.
+- Deletion handling: Task18 may delete rows owned by the profile after or with `progress_logs`. Snapshots are rebuildable and must not be treated as the source of truth.
+
 ## Required verification when Task18 lands
 
 - Owner deletion removes `user_private_notes`.
 - Owner deletion removes or anonymizes `user_entries.review`.
 - Owner deletion removes or anonymizes `annotations.content`.
 - Owner deletion removes `tags`, `entry_tags`, and `annotation_tags`.
+- Owner deletion removes `progress_logs` and `progress_snapshots`.
 - Public views and APIs do not retain deleted-profile Task07 content.

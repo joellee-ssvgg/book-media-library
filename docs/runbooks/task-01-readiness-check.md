@@ -1,6 +1,6 @@
 # Task 01 Readiness Check
 
-更新时间: 2026-05-17
+更新时间: 2026-05-21
 
 ## 目的
 
@@ -50,8 +50,10 @@ chmod +x scripts/check-task-01-readiness.sh
 - 脚本不会使用 service role key 执行业务查询。
 - 脚本不会把缺失的 Supabase/Vercel/Upstash/Sentry/TMDB 替换成本地 mock。
 
-## 当前预期
+## 当前状态
 
-在基础设施尚未解除前，脚本应该返回 `NOT READY`。这不是失败实现，而是正确拦截。
+2026-05-21 实测脚本返回 `READY: Task 01 startup gates passed. warnings=0`。
 
-Task 01 只有在脚本返回 `READY`，并且阻断项文档不再列出未解除项后，才允许进入代码与 migration 实现。
+当前必需源码文档、git、Node、pnpm、Docker、Supabase、GitHub、Vercel、`.env.local` 与必需环境变量检查通过。
+
+Task 01 只有在脚本返回 `READY`，并且阻断项文档不再列出未解除项后，才允许把启动门禁视为通过。

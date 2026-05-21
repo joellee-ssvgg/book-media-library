@@ -1,6 +1,6 @@
 # Task 01 Startup Blockers
 
-更新时间: 2026-05-20
+更新时间: 2026-05-21
 
 ## 依据
 
@@ -20,7 +20,7 @@
 | GitHub CLI | 已登录 `joellee-ssvgg`，具备 `repo` 与 `workflow` scope |
 | GitHub 仓库 | 已创建私有仓库 `joellee-ssvgg/book-media-library`，本地 `origin` 已配置 |
 | Next.js 骨架 | `apps/web` 已生成，Next `16.2.6` |
-| Vercel CLI | 已作为 root devDependency 安装，`pnpm exec vercel --version` 为 `54.1.0`，`pnpm exec vercel whoami --non-interactive` 返回 `leejoel376-7980` |
+| Vercel CLI | 已作为 root devDependency 安装，`pnpm task01:check` 确认 Vercel CLI `54.1.0` 且已认证 |
 | 环境变量模板 | `.env.example` 已生成，不含真实密钥 |
 | 本地 dev 环境文件 | `.env.local` 已创建且被 `.gitignore` 忽略；已填入 Task 01 必需 dev 环境变量 |
 
@@ -40,7 +40,7 @@
 
 | 项 | 当前证据 |
 | --- | --- |
-| 无 | `pnpm task01:check` 返回 `READY: Task 01 startup gates passed. warnings=0` |
+| 无 | 2026-05-21 运行 `pnpm task01:check` 返回 `READY: Task 01 startup gates passed. warnings=0` |
 
 ## 阻断项登记
 
@@ -50,9 +50,9 @@
 
 ## 当前结论
 
-Task 01 启动门禁已通过。GitHub 私有仓库已经创建，本地 `main`/`dev` 已推送到远端；Docker daemon 已恢复；Vercel CLI 已可认证；Supabase CLI 已登录且 `.env.local` 已写入真实 dev 值；TMDB、Upstash、Sentry 必需环境变量已补齐。
+Task 01 启动门禁当前通过。GitHub 私有仓库、本地 `main`/`dev` 远端、Docker daemon、Supabase CLI、Vercel CLI、`.env.local`、TMDB、Upstash、Sentry 当前检查均通过。
 
 ## 下一步入口
 
-1. 进入 Task 01 实现前重新运行 `pnpm task01:check`，确认本机 Docker / SaaS 登录态未漂移。
-2. 开始业务代码或 migration 前，按任务要求继续运行相关 lint / typecheck / test / build 验证。
+1. 继续业务代码或 migration 前，重新运行 `pnpm task01:check`，确认本机 Docker / SaaS 登录态未漂移。
+2. 按任务要求运行相关 lint / typecheck / test / build 验证。

@@ -13,10 +13,8 @@ export type UserScopedSupabaseClient = {
 type UserScopedSupabaseResult =
   | {
       client: UserScopedSupabaseClient;
-      error?: never;
     }
   | {
-      client?: never;
       error: string;
     };
 
