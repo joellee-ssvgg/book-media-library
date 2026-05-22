@@ -64,7 +64,7 @@ Latest staging checks:
 
 | Gap | Impact | Next evidence needed |
 | --- | --- | --- |
-| PR is still draft and unmerged | PR #13 CI passed, but the change set is not merged into `dev`. | Mark the PR ready and merge when the user approves the release boundary. |
+| PR is ready but unmerged | PR #13 is ready for review and CI passed, but the change set is not merged into `dev`. | Merge when the user approves the release boundary. |
 
 ## Current Conclusion
 
@@ -72,4 +72,4 @@ Local P0 verification is green and the GitHub OAuth document conflict is resolve
 
 Do not mark the full thread goal complete yet because:
 
-- PR #13 is still draft and unmerged.
+- PR #13 is ready but still unmerged.
