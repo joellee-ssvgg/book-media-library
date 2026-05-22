@@ -34,6 +34,7 @@ insert into task19_expected_rls_tables (table_name) values
   ('progress_snapshots'),
   ('provider_search_cache'),
   ('series'),
+  ('slo_alert_thresholds'),
   ('tags'),
   ('user_entries'),
   ('user_private_notes'),

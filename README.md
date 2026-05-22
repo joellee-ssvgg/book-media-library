@@ -1,6 +1,6 @@
 # Book Media Library
 
-Private implementation repository for the P0 personal book and movie library platform.
+Implementation repository for the P0 personal book and movie library platform.
 
 ## Source Of Truth
 
