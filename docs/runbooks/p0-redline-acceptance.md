@@ -20,6 +20,19 @@ pnpm p0:redline
 
 `pnpm p0:redline` starts a local Next.js dev server with local Supabase public config, creates demo-only data, verifies the public route before and after deletion, and validates the generated MSPF document with the same schema used by `scripts/validate-mspf.ts`.
 
+For the acceptance deliverables required by the P0 script:
+
+```bash
+pnpm p0:artifacts
+```
+
+This runs the same redline checks and writes:
+
+- `acceptance/p0-run-<date>.md`
+- `acceptance/p0-mspf-<date>.json`
+- `acceptance/p0-demo01-public-<date>.png`
+- `acceptance/p0-demo01-deleted-<date>.png`
+
 ## NOT-GO Conditions
 
 Treat any script failure as P0 NOT-GO until fixed. The relevant hard failures are:

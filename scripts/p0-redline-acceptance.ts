@@ -1,7 +1,8 @@
 import { execFileSync, spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { createRequire } from "node:module";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import net from "node:net";
-import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 
 const requireFromWeb = createRequire(new URL("../apps/web/package.json", import.meta.url));
@@ -29,6 +30,8 @@ const OWNER_MOVIE_TITLE = "P0 Redline Owner Movie";
 const OTHER_BOOK_TITLE = "P0 Redline Other Book";
 const SERVER_SECRET_PATTERN =
   /(SUPABASE_SERVICE_ROLE_KEY|SERVICE_ROLE_KEY|SENTRY_AUTH_TOKEN|UPSTASH_REDIS_REST_TOKEN|TMDB_API_KEY|JWT_SECRET|SECRET_KEY|sb_secret_|postgresql:\/\/|eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.)/i;
+const WRITE_ARTIFACTS = process.argv.includes("--write-artifacts");
+const ACCEPTANCE_DIR = "acceptance";
 
 type SupabaseLocalEnv = {
   ANON_KEY: string;
@@ -59,6 +62,13 @@ type DeletionResult = {
   request_status: string;
   same_auth_entry_count: number;
   tag_count: number;
+};
+
+type ArtifactPaths = {
+  deletedScreenshot: string;
+  mspfJson: string;
+  publicScreenshot: string;
+  runMarkdown: string;
 };
 
 function requireCommand(command: string) {
@@ -163,6 +173,27 @@ function runPsql<T>(dbUrl: string, sql: string): T {
 
 function runToken() {
   return `p0_${Date.now().toString(36)}`;
+}
+
+function shanghaiDate() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    day: "2-digit",
+    month: "2-digit",
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+  }).formatToParts(new Date());
+  const byType = new Map(parts.map((part) => [part.type, part.value]));
+
+  return `${byType.get("year")}-${byType.get("month")}-${byType.get("day")}`;
+}
+
+function artifactPaths(date = shanghaiDate()): ArtifactPaths {
+  return {
+    deletedScreenshot: join(ACCEPTANCE_DIR, `p0-demo01-deleted-${date}.png`),
+    mspfJson: join(ACCEPTANCE_DIR, `p0-mspf-${date}.json`),
+    publicScreenshot: join(ACCEPTANCE_DIR, `p0-demo01-public-${date}.png`),
+    runMarkdown: join(ACCEPTANCE_DIR, `p0-run-${date}.md`),
+  };
 }
 
 function sqlForSetup(token: string) {
@@ -830,6 +861,95 @@ async function assertHtmlAfterDeletion(baseUrl: string) {
   assertNoPublicLeak("Deleted public profile response", html);
 }
 
+function runPlaywrightScreenshot(url: string, outputPath: string) {
+  execFileSync(
+    "npx",
+    [
+      "--yes",
+      "playwright",
+      "screenshot",
+      "--browser",
+      "chromium",
+      "--viewport-size",
+      "1280,900",
+      "--full-page",
+      "--wait-for-timeout",
+      "1000",
+      url,
+      outputPath,
+    ],
+    {
+      encoding: "utf8",
+      maxBuffer: 1024 * 1024 * 10,
+      stdio: ["ignore", "pipe", "pipe"],
+    },
+  );
+}
+
+function captureScreenshot(url: string, outputPath: string) {
+  try {
+    runPlaywrightScreenshot(url, outputPath);
+  } catch {
+    execFileSync("npx", ["--yes", "playwright", "install", "chromium"], {
+      encoding: "utf8",
+      maxBuffer: 1024 * 1024 * 20,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    runPlaywrightScreenshot(url, outputPath);
+  }
+}
+
+function writeAcceptanceArtifacts({
+  deletion,
+  paths,
+  setup,
+}: {
+  deletion: DeletionResult;
+  paths: ArtifactPaths;
+  setup: SetupResult;
+}) {
+  mkdirSync(ACCEPTANCE_DIR, { recursive: true });
+  writeFileSync(paths.mspfJson, `${JSON.stringify(setup.mspf, null, 2)}\n`, "utf8");
+
+  const runMarkdown = `# P0 Acceptance Run ${shanghaiDate()}
+
+## Source
+
+- P0 acceptance script: steps 11, 12, and 13.
+- Test account: local demo profile \`${OWNER_USERNAME}\`.
+- Environment: local Supabase only; script refuses non-local \`API_URL\` and \`DB_URL\`.
+
+## Checklist
+
+- [x] Step 11: anonymous public JSON and rendered \`/u/${OWNER_USERNAME}\` HTML do not expose \`${PRIVATE_NOTE_FRAGMENT}\`, \`private_note\`, or \`user_private_notes\`.
+- [x] Step 12: MSPF validates with AJV and includes demo book, movie, progress, private note, and tags.
+- [x] Step 12: MSPF excludes other-user data and server secret-shaped values.
+- [x] Step 13: export-then-delete returns public profile state \`${deletion.profile_state_after_soft_delete}\` after soft delete.
+- [x] Step 13: hard deletion processed \`${deletion.hard_deleted}\` profile and the same auth user sees \`${deletion.same_auth_entry_count}\` old entries.
+- [x] Step 13: private notes, progress logs, tags, export jobs, and auth identities are removed.
+
+## Screenshots
+
+- Public page before deletion: [${paths.publicScreenshot}](./${paths.publicScreenshot.split("/").pop()})
+- Deleted page after export-then-delete: [${paths.deletedScreenshot}](./${paths.deletedScreenshot.split("/").pop()})
+
+## MSPF Sample
+
+- [${paths.mspfJson}](./${paths.mspfJson.split("/").pop()})
+
+## Script Output
+
+\`\`\`text
+P0 redline acceptance passed:
+- Step 11 public JSON and /u/${OWNER_USERNAME} HTML do not expose private notes.
+- Step 12 MSPF validates with AJV and excludes other-user data and server secrets.
+- Step 13 export-then-delete makes /u/${OWNER_USERNAME} unavailable and removes old owner data.
+\`\`\`
+`;
+
+  writeFileSync(paths.runMarkdown, runMarkdown, "utf8");
+}
+
 async function main() {
   requireCommand("psql");
   requireCommand("supabase");
@@ -838,6 +958,7 @@ async function main() {
   const env = readLocalSupabaseEnv();
   const token = runToken();
   const setup = runPsql<SetupResult>(env.DB_URL, sqlForSetup(token));
+  const paths = WRITE_ARTIFACTS ? artifactPaths() : null;
 
   assertPublicPayloads(setup);
   assertMspf(setup.mspf);
@@ -848,11 +969,19 @@ async function main() {
 
   try {
     await assertHtmlBeforeDeletion(baseUrl);
+    if (paths) {
+      mkdirSync(ACCEPTANCE_DIR, { recursive: true });
+      captureScreenshot(`${baseUrl}/u/${OWNER_USERNAME}`, paths.publicScreenshot);
+    }
 
     const deletion = runPsql<DeletionResult>(env.DB_URL, sqlForDeletion(setup.export_job_id));
     assertDeletion(deletion);
 
     await assertHtmlAfterDeletion(baseUrl);
+    if (paths) {
+      captureScreenshot(`${baseUrl}/u/${OWNER_USERNAME}`, paths.deletedScreenshot);
+      writeAcceptanceArtifacts({ deletion, paths, setup });
+    }
   } catch (error) {
     const logs = server.output.join("").trim().split(/\r?\n/).slice(-30).join("\n");
     if (logs) {
