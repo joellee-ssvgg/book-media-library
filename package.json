@@ -14,6 +14,8 @@
     "typecheck": "pnpm --dir apps/web typecheck",
     "test": "pnpm --dir apps/web test",
     "test:mspf:schema": "pnpm tsx scripts/validate-mspf.ts test/fixtures/valid-mspf.json",
+    "p0:redline": "pnpm tsx scripts/p0-redline-acceptance.ts",
+    "p0:check": "pnpm task20:check && pnpm p0:redline",
     "task01:check": "./scripts/check-task-01-readiness.sh",
     "task19:check": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:mspf:schema && pnpm db:migrate:smoke && pnpm db:test:rls",
     "task20:check": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:mspf:schema && pnpm db:migrate:smoke && pnpm db:test:rls && pnpm build",
