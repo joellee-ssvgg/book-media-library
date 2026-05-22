@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { createCookieSupabaseClient } from "@/lib/supabase/auth";
 
 export type UserScopedSupabaseClient = {
   rpc<T = unknown>(
@@ -80,6 +81,46 @@ function createRpcClient(accessToken?: string): UserScopedSupabaseResult {
 
 export function createUserScopedSupabase(accessToken: string): UserScopedSupabaseResult {
   return createRpcClient(accessToken);
+}
+
+export async function createActionSupabase(
+  accessToken?: string | null,
+): Promise<UserScopedSupabaseResult> {
+  const legacyAccessToken = accessToken?.trim();
+
+  if (legacyAccessToken) {
+    return createRpcClient(legacyAccessToken);
+  }
+
+  const supabase = await createCookieSupabaseClient();
+
+  if ("error" in supabase) {
+    return supabase;
+  }
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    return {
+      error: "请先通过 GitHub 登录后再提交。",
+    };
+  }
+
+  return {
+    client: {
+      async rpc<T = unknown>(fn: string, args?: Record<string, unknown>) {
+        const result = await supabase.rpc(fn, args);
+
+        return {
+          data: result.data as T | null,
+          error: result.error,
+        };
+      },
+    },
+  };
 }
 
 export function createAnonymousSupabase(): AnonymousSupabaseResult {

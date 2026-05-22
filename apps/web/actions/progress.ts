@@ -1,6 +1,6 @@
 "use server";
 
-import { createUserScopedSupabase } from "@/lib/supabase/server";
+import { createActionSupabase } from "@/lib/supabase/server";
 import {
   recordProgressFormSchema,
   type RecordProgressActionState,
@@ -76,7 +76,7 @@ export async function recordProgressAction(
   }
 
   const { accessToken, ...input } = parsed.data;
-  const supabase = createUserScopedSupabase(accessToken);
+  const supabase = await createActionSupabase(accessToken);
 
   if ("error" in supabase) {
     return {

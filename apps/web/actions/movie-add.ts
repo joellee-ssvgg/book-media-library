@@ -2,7 +2,7 @@
 
 import { canonicalizeProviderRecord } from "@/lib/providers/canonicalize";
 import { createTmdbMovieProvider } from "@/lib/providers/tmdb";
-import { createUserScopedSupabase } from "@/lib/supabase/server";
+import { createActionSupabase } from "@/lib/supabase/server";
 import {
   addMovieEntryFormSchema,
   type AddMovieEntryActionState,
@@ -52,7 +52,7 @@ export async function addMovieEntryAction(
 
   const record = recordResult.value;
   const draft = canonicalizeProviderRecord(record);
-  const supabase = createUserScopedSupabase(parsed.data.accessToken);
+  const supabase = await createActionSupabase(parsed.data.accessToken);
 
   if ("error" in supabase) {
     return {

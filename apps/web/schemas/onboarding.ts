@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { optionalAccessTokenSchema } from "@/schemas/auth";
 
 const favoriteItemSchema = z.object({
   media_type: z.enum(["book", "movie"]).default("book"),
@@ -7,7 +8,7 @@ const favoriteItemSchema = z.object({
 });
 
 export const completeOnboardingFormSchema = z.object({
-  accessToken: z.string().trim().min(1, "access token 必填"),
+  accessToken: optionalAccessTokenSchema,
   username: z
     .string()
     .trim()
@@ -18,7 +19,7 @@ export const completeOnboardingFormSchema = z.object({
 });
 
 export const onboardingImportFormSchema = z.object({
-  accessToken: z.string().trim().min(1, "access token 必填"),
+  accessToken: optionalAccessTokenSchema,
   importSource: z.enum(["csv", "mspf"]),
 });
 

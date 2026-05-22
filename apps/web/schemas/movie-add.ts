@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { optionalAccessTokenSchema } from "@/schemas/auth";
 
 const ratingOptions = [
   "",
@@ -15,7 +16,7 @@ const ratingOptions = [
 ] as const;
 
 export const addMovieEntryFormSchema = z.object({
-  accessToken: z.string().trim().min(1, "access token 必填"),
+  accessToken: optionalAccessTokenSchema,
   provider: z.literal("tmdb"),
   externalId: z.string().trim().min(1),
   status: z.enum(["want_to_watch", "watching", "watched", "abandoned"]).default("want_to_watch"),

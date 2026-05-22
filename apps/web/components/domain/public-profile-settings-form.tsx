@@ -25,19 +25,6 @@ export function PublicProfileSettingsForm() {
   return (
     <form action={formAction} className="grid gap-5 border border-[#d8d2c4] bg-[#fffdf8] p-5">
       <div className="grid gap-2">
-        <label className="text-sm font-medium" htmlFor="publicSettingsAccessToken">
-          Supabase access token
-        </label>
-        <textarea
-          className="min-h-24 resize-y border border-[#c9c2b3] bg-white px-3 py-2 font-mono text-xs outline-none focus:border-[#315f53]"
-          id="publicSettingsAccessToken"
-          name="accessToken"
-          spellCheck={false}
-        />
-        {fieldError(state.fieldErrors?.accessToken)}
-      </div>
-
-      <div className="grid gap-2">
         <label className="text-sm font-medium" htmlFor="publicVisibility">
           主页可见性
         </label>

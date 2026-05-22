@@ -1,11 +1,12 @@
 import { z } from "zod";
+import { optionalAccessTokenSchema } from "@/schemas/auth";
 
 export const dataExportFormSchema = z.object({
-  accessToken: z.string().trim().min(1, "access token 必填"),
+  accessToken: optionalAccessTokenSchema,
 });
 
 export const accountDeletionFormSchema = z.object({
-  accessToken: z.string().trim().min(1, "access token 必填"),
+  accessToken: optionalAccessTokenSchema,
   deletionChannel: z.enum(["export_then_delete", "gdpr"]),
   exportJobId: z.string().trim().uuid("export job id 必须是 UUID").optional(),
   confirmation: z.string().trim().min(1, "确认文本必填"),

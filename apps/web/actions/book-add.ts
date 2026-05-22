@@ -3,7 +3,7 @@
 import { createGoogleBooksProvider } from "@/lib/providers/googlebooks";
 import { createOpenLibraryProvider } from "@/lib/providers/openlibrary";
 import { canonicalizeProviderRecord } from "@/lib/providers/canonicalize";
-import { createUserScopedSupabase } from "@/lib/supabase/server";
+import { createActionSupabase } from "@/lib/supabase/server";
 import {
   addBookEntryFormSchema,
   type AddBookEntryActionState,
@@ -55,7 +55,7 @@ export async function addBookEntryAction(
   }
 
   const draft = canonicalizeProviderRecord(recordResult.value);
-  const supabase = createUserScopedSupabase(parsed.data.accessToken);
+  const supabase = await createActionSupabase(parsed.data.accessToken);
 
   if ("error" in supabase) {
     return {

@@ -1,6 +1,6 @@
 "use server";
 
-import { createUserScopedSupabase } from "@/lib/supabase/server";
+import { createActionSupabase } from "@/lib/supabase/server";
 import {
   loadLibraryDashboardFormSchema,
   type LibraryDashboardActionState,
@@ -22,13 +22,13 @@ export async function loadLibraryDashboardAction(
   if (!parsed.success) {
     return {
       status: "validation_error",
-      message: "加载我的库需要 Supabase access token。",
+      message: "加载我的库需要先登录。",
       fieldErrors: toFieldErrors(parsed),
       data: previousState.data,
     };
   }
 
-  const supabase = createUserScopedSupabase(parsed.data.accessToken);
+  const supabase = await createActionSupabase(parsed.data.accessToken);
 
   if ("error" in supabase) {
     return {

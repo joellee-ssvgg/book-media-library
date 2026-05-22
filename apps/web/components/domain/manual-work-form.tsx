@@ -25,19 +25,6 @@ export function ManualWorkForm() {
 
   return (
     <form action={formAction} className="grid gap-5">
-      <div className="grid gap-2">
-        <label className="text-sm font-medium" htmlFor="accessToken">
-          Supabase access token
-        </label>
-        <textarea
-          className="min-h-24 resize-y border border-[#c9c2b3] bg-white px-3 py-2 font-mono text-xs outline-none focus:border-[#315f53]"
-          id="accessToken"
-          name="accessToken"
-          spellCheck={false}
-        />
-        {fieldError(state.fieldErrors?.accessToken)}
-      </div>
-
       <div className="grid gap-4 md:grid-cols-[160px_1fr_120px]">
         <div className="grid gap-2">
           <label className="text-sm font-medium" htmlFor="mediaType">

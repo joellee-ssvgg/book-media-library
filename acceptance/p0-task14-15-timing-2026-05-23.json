@@ -1,0 +1,40 @@
+{
+  "run_token": "p0timing_mph7q6dn",
+  "base_url": "http://127.0.0.1:3024",
+  "measured_at": "2026-05-22T17:48:29.307Z",
+  "local_date": "2026-05-23",
+  "threshold_ms": 60000,
+  "method": {
+    "browser": "Playwright CLI real browser session",
+    "environment": "Local Next.js dev server with local Supabase URL and anon key; root .env.local supplied provider API keys.",
+    "auth": "Local Supabase Auth signup returned a real access token; the timing harness injected that token into the existing legacy accessToken form field before submitting real server actions.",
+    "code_changes": "No business logic changed for this timing run."
+  },
+  "flows": [
+    {
+      "task": "Task14 onboarding",
+      "started_at": "2026-05-22T17:48:29.307Z",
+      "completed_at": "2026-05-22T17:48:31.561Z",
+      "duration_ms": 2254,
+      "pass": true,
+      "success_text": "onboarding 已完成。"
+    },
+    {
+      "task": "Task14 book add",
+      "started_at": "2026-05-22T17:48:31.561Z",
+      "completed_at": "2026-05-22T17:48:40.396Z",
+      "duration_ms": 8829,
+      "pass": true,
+      "success_text": "书籍条目已添加。"
+    },
+    {
+      "task": "Task15 movie add",
+      "started_at": "2026-05-22T17:48:40.396Z",
+      "completed_at": "2026-05-22T17:48:42.787Z",
+      "duration_ms": 2389,
+      "pass": true,
+      "success_text": "电影条目已添加。"
+    }
+  ],
+  "all_passed": true
+}

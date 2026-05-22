@@ -1,7 +1,8 @@
 import { z } from "zod";
+import { optionalAccessTokenSchema } from "@/schemas/auth";
 
 export const loadLibraryDashboardFormSchema = z.object({
-  accessToken: z.string().trim().min(1, "access token 必填"),
+  accessToken: optionalAccessTokenSchema,
 });
 
 export type LibraryEntryView = {

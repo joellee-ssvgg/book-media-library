@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
 
-select plan(24);
+select plan(26);
 
 create or replace function public._set_auth_user(test_user uuid)
 returns void
@@ -62,14 +62,28 @@ insert into auth.users (
   now(),
   '{"provider":"email","providers":["email"]}'::jsonb,
   '{"username":"other","display_name":"Other"}'::jsonb
+),
+(
+  '00000000-0000-0000-0000-000000000000',
+  '00000000-0000-0000-0000-00000000ccc1',
+  'authenticated',
+  'authenticated',
+  'github-owner@example.com',
+  'test-password-hash',
+  now(),
+  now(),
+  now(),
+  '{"provider":"github","providers":["github"]}'::jsonb,
+  '{"username":"github_owner","display_name":"GitHub Owner","provider_id":"gh-owner-provider"}'::jsonb
 );
 
 select is(
   (select count(*)::integer from public.profiles where auth_user_id in (
     '00000000-0000-0000-0000-00000000aaa1',
-    '00000000-0000-0000-0000-00000000bbb1'
+    '00000000-0000-0000-0000-00000000bbb1',
+    '00000000-0000-0000-0000-00000000ccc1'
   )),
-  2,
+  3,
   'auth.users insert creates profiles'
 );
 
@@ -77,6 +91,23 @@ select is(
   (select count(*)::integer from public.auth_identities where provider = 'supabase'),
   2,
   'auth.users insert creates supabase auth identities'
+);
+
+select is(
+  (select count(*)::integer from public.auth_identities where provider = 'github'),
+  1,
+  'github auth.users insert creates github auth identity'
+);
+
+select is(
+  (
+    select provider_user_id
+    from public.auth_identities ai
+    join public.profiles p on p.id = ai.profile_id
+    where p.auth_user_id = '00000000-0000-0000-0000-00000000ccc1'
+  ),
+  'gh-owner-provider',
+  'github auth identity uses provider id'
 );
 
 select is(

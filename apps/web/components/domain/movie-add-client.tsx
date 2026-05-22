@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 
 import { addMovieEntryAction } from "@/actions/movie-add";
 import { OfflineSubmitButton } from "@/components/domain/offline-submit-button";
@@ -30,13 +30,7 @@ const ratingOptions = [
   { value: "5", label: "0.5" },
 ];
 
-function CandidateForm({
-  accessToken,
-  candidate,
-}: {
-  accessToken: string;
-  candidate: MovieCandidateView;
-}) {
+function CandidateForm({ candidate }: { candidate: MovieCandidateView }) {
   const [state, formAction, pending] = useActionState(
     addMovieEntryAction,
     initialAddMovieEntryActionState,
@@ -44,7 +38,6 @@ function CandidateForm({
 
   return (
     <form action={formAction} className="grid gap-4 border border-[#d8d2c4] bg-[#fffdf8] p-4">
-      <input name="accessToken" type="hidden" value={accessToken} />
       <input name="provider" type="hidden" value={candidate.provider} />
       <input name="externalId" type="hidden" value={candidate.externalId} />
 
@@ -129,8 +122,6 @@ function CandidateForm({
 }
 
 export function MovieAddClient({ query, candidates, notices }: MovieAddClientProps) {
-  const [accessToken, setAccessToken] = useState("");
-
   return (
     <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
       <aside className="grid content-start gap-5 border border-[#d8d2c4] bg-[#fffdf8] p-5">
@@ -153,19 +144,6 @@ export function MovieAddClient({ query, candidates, notices }: MovieAddClientPro
           </button>
         </form>
 
-        <div className="grid gap-2">
-          <label className="text-sm font-medium" htmlFor="movieAccessToken">
-            Supabase access token
-          </label>
-          <textarea
-            className="min-h-28 resize-y border border-[#c9c2b3] bg-white px-3 py-2 font-mono text-xs outline-none focus:border-[#315f53]"
-            id="movieAccessToken"
-            onChange={(event) => setAccessToken(event.target.value)}
-            spellCheck={false}
-            value={accessToken}
-          />
-        </div>
-
         {notices.length ? (
           <div className="grid gap-2 border border-[#ead6ab] bg-[#fff8e8] p-3 text-xs text-[#5f665f]">
             {notices.map((notice) => (
@@ -186,7 +164,6 @@ export function MovieAddClient({ query, candidates, notices }: MovieAddClientPro
 
         {candidates.map((candidate) => (
           <CandidateForm
-            accessToken={accessToken}
             candidate={candidate}
             key={`${candidate.provider}:${candidate.externalId}`}
           />

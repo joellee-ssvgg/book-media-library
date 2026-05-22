@@ -20,26 +20,6 @@ function fieldError(errors: string[] | undefined) {
   return <p className="mt-1 text-xs text-[#9a3412]">{errors[0]}</p>;
 }
 
-type AccessTokenFieldProps = {
-  compact?: boolean;
-};
-
-function AccessTokenField({ compact = false }: AccessTokenFieldProps) {
-  return (
-    <div className="grid gap-2">
-      <label className="text-sm font-medium" htmlFor={compact ? "importAccessToken" : "accessToken"}>
-        Supabase access token
-      </label>
-      <textarea
-        className={`${compact ? "min-h-20" : "min-h-24"} resize-y border border-[#c9c2b3] bg-white px-3 py-2 font-mono text-xs outline-none focus:border-[#315f53]`}
-        id={compact ? "importAccessToken" : "accessToken"}
-        name="accessToken"
-        spellCheck={false}
-      />
-    </div>
-  );
-}
-
 export function OnboardingForms() {
   const [profileState, profileAction, profilePending] = useActionState(
     completeOnboardingAction,
@@ -57,9 +37,6 @@ export function OnboardingForms() {
           <p className="text-xs uppercase tracking-[0.18em] text-[#6c675f]">Step 1</p>
           <h2 className="mt-1 text-xl font-semibold">注册资料与 60 秒首次成功</h2>
         </div>
-
-        <AccessTokenField />
-        {fieldError(profileState.fieldErrors?.accessToken)}
 
         <div className="grid gap-4 md:grid-cols-3">
           <div className="grid gap-2">
@@ -160,9 +137,6 @@ export function OnboardingForms() {
           <p className="text-xs uppercase tracking-[0.18em] text-[#6c675f]">Step 2</p>
           <h2 className="mt-1 text-xl font-semibold">上传 CSV / MSPF 异步导入</h2>
         </div>
-
-        <AccessTokenField compact />
-        {fieldError(importState.fieldErrors?.accessToken)}
 
         <div className="grid gap-2">
           <label className="text-sm font-medium" htmlFor="importSource">
