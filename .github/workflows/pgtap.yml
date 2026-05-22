@@ -11,10 +11,6 @@ on:
       - "test/rls/**"
       - ".github/workflows/pgtap.yml"
   pull_request:
-    paths:
-      - "supabase/**"
-      - "test/rls/**"
-      - ".github/workflows/pgtap.yml"
 
 jobs:
   pgtap:
