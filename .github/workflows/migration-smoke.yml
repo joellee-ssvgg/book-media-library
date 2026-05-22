@@ -10,9 +10,6 @@ on:
       - "supabase/**"
       - ".github/workflows/migration-smoke.yml"
   pull_request:
-    paths:
-      - "supabase/**"
-      - ".github/workflows/migration-smoke.yml"
 
 jobs:
   migration-smoke:
