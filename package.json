@@ -16,6 +16,9 @@
     "test:mspf:schema": "pnpm tsx scripts/validate-mspf.ts test/fixtures/valid-mspf.json",
     "task01:check": "./scripts/check-task-01-readiness.sh",
     "task19:check": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:mspf:schema && pnpm db:migrate:smoke && pnpm db:test:rls",
+    "task20:check": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:mspf:schema && pnpm db:migrate:smoke && pnpm db:test:rls && pnpm build",
+    "task20:rate-limit:smoke": "pnpm tsx scripts/task20-rate-limit-smoke.ts",
+    "task20:sentry:smoke": "pnpm tsx scripts/task20-sentry-smoke.ts",
     "db:migrate:smoke": "supabase db reset",
     "db:test:rls": "supabase test db test/rls"
   },
