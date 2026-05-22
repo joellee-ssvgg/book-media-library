@@ -23,6 +23,7 @@ Latest local checks run on 2026-05-23:
 | `pnpm task20:rate-limit:smoke` | PASS, Upstash 20/min/IP and 1000/day/profile boundaries verified |
 | `pnpm task20:sentry:smoke` | PASS, Sentry ingest accepted event `bcfd6bda580d4a4cb9cb9c3ed785c6b7` |
 | Task14/15 browser timing | PASS, onboarding 2254 ms, book add 8829 ms, movie add 2389 ms against 60000 ms threshold |
+| PR #13 CI on this diff | PASS, `lint-and-type`, `migration-smoke`, `pgtap`, and `p0-redline` all completed with `SUCCESS`; merge state `CLEAN` before this audit update |
 | `git diff --check` | PASS |
 
 Latest staging checks:
@@ -56,14 +57,14 @@ Latest staging checks:
 | Task 16 - library + dashboard + seed | Evidence-backed | `supabase/migrations/202605211610_task16_library_dashboard.sql`, `test/rls/task16_library_dashboard.sql`, `/library`, `/dashboard`, staging evidence for 3 real entries before deletion and 0 real entries with seed mode after deletion. |
 | Task 17 - public homepage SSR + OG | Evidence-backed | `supabase/migrations/202605211700_task17_public_pages.sql`, `test/rls/task17_public_pages.sql`, `/u/[username]`, `/w/[workId]/[slug]`, OG routes. Staging `/u/demo01` returns 410 after deletion; work OG image returns `1200x630` PNG. |
 | Task 18 - MSPF export + deletion | Evidence-backed | `supabase/migrations/202605221000_task18_mspf_export_deletion.sql`, `test/rls/task18_mspf_export_deletion.sql`, `apps/web/lib/mspf/*`, `scripts/p0-redline-acceptance.ts`, local artifacts under `acceptance/`, staging fresh export job `019e5075-ddf6-7cc0-a56d-489bfcdf48df`, live deletion request `019e5076-fff8-78d0-a06d-fb5803f59037`. |
-| Task 19 - RLS pgTAP test suite / CI blocking | Evidence-backed locally and historically in CI | `.github/workflows/lint-and-type.yml`, `.github/workflows/migration-smoke.yml`, `.github/workflows/pgtap.yml`, `.github/workflows/p0-redline.yml`, `test/rls/task19_rls_ci_guard.sql`, `docs/runbooks/task19-rls-ci-gates.md`, local `pnpm p0:check`. Current local changes have not yet run through a fresh PR CI cycle. |
+| Task 19 - RLS pgTAP test suite / CI blocking | Evidence-backed locally and in PR CI | `.github/workflows/lint-and-type.yml`, `.github/workflows/migration-smoke.yml`, `.github/workflows/pgtap.yml`, `.github/workflows/p0-redline.yml`, `test/rls/task19_rls_ci_guard.sql`, `docs/runbooks/task19-rls-ci-gates.md`, local `pnpm p0:check`, PR #13 CI. |
 | Task 20 - PWA + Upstash rate limiting | Evidence-backed | `apps/web/public/manifest.webmanifest`, `apps/web/public/sw.js`, `apps/web/proxy.ts`, `apps/web/lib/rate-limit/*`, `apps/web/lib/observability/*`, `supabase/migrations/202605221530_task20_pwa_upstash_rate_limits.sql`, `test/rls/task20_pwa_upstash_rate_limit.sql`, `docs/runbooks/task20-pwa-upstash-rate-limit.md`, local and external smoke checks. |
 
 ## Known Evidence Gaps
 
 | Gap | Impact | Next evidence needed |
 | --- | --- | --- |
-| Current local change set has not run through PR CI | Local checks passed, but branch protection evidence does not yet apply to this exact diff. | Push a branch/PR and verify required GitHub checks if publishing is requested. |
+| PR is still draft and unmerged | PR #13 CI passed, but the change set is not merged into `dev`. | Mark the PR ready and merge when the user approves the release boundary. |
 
 ## Current Conclusion
 
@@ -71,5 +72,4 @@ Local P0 verification is green and the GitHub OAuth document conflict is resolve
 
 Do not mark the full thread goal complete yet because:
 
-- the current change set is still local and uncommitted;
-- current PR CI evidence is missing for this exact local diff.
+- PR #13 is still draft and unmerged.
