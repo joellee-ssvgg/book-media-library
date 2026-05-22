@@ -14,9 +14,10 @@ Task19 keeps the RLS suite merge-blocking by making the database checks explicit
 
 ## CI Gates
 
-- `.github/workflows/lint-and-type.yml` runs lint, typecheck, unit tests, and MSPF AJV schema validation.
-- `.github/workflows/migration-smoke.yml` runs `supabase db reset`.
-- `.github/workflows/pgtap.yml` runs `supabase db reset` and `supabase test db test/rls`.
+- `.github/workflows/lint-and-type.yml` runs lint, typecheck, unit tests, and MSPF AJV schema validation on every pull request.
+- `.github/workflows/migration-smoke.yml` runs `supabase db reset` on every pull request.
+- `.github/workflows/pgtap.yml` runs `supabase db reset` and `supabase test db test/rls` on every pull request.
+- Protected `dev` and `main` branches require `lint-and-type`, `migration-smoke`, and `pgtap`.
 
 ## RLS Drift Guard
 
@@ -30,11 +31,13 @@ Task19 keeps the RLS suite merge-blocking by making the database checks explicit
 
 Partition children may omit direct FORCE RLS only when they inherit from a protected `activity_events` or `progress_logs` parent.
 
-## Current External Blocker
+## Merge-Block Evidence
 
-The strict acceptance item "CI fails -> cannot merge" requires branch protection or a repository ruleset with required checks. GitHub currently rejects branch protection and ruleset APIs for this private repository:
+The strict acceptance item "CI fails -> cannot merge" is enforced through GitHub branch protection.
 
-- `gh api repos/joellee-ssvgg/book-media-library/branches/dev/protection` returned `403` because private repositories require GitHub Pro or a public repository for protected branches.
-- `gh api repos/joellee-ssvgg/book-media-library/rulesets` returned the same plan-level `403`.
+- The repository is public so branch protection is available.
+- `dev` and `main` both require `lint-and-type`, `migration-smoke`, and `pgtap`.
+- PR #2 proved all three required checks materialize on pull requests and can pass before merge.
+- PR #3 intentionally failed `pgtap`; GitHub reported `mergeStateStatus=BLOCKED`, with `lint-and-type=SUCCESS`, `migration-smoke=SUCCESS`, and `pgtap=FAILURE`.
 
-Until that account/repository boundary changes, CI failure can be demonstrated, but the merge-blocking enforcement cannot be truthfully marked complete.
+Temporary failure branches must be closed and deleted after evidence is captured.
