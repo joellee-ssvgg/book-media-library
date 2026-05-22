@@ -24,6 +24,20 @@
   },
   "devDependencies": {
     "tsx": "4.21.0",
-    "vercel": "^54.1.0"
+    "vercel": "^54.3.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@tootallnate/once": "2.0.1",
+      "@vercel/static-config>ajv": "8.18.0",
+      "minimatch@>=10.0.0 <10.2.5": "10.2.5",
+      "path-to-regexp@>=4.0.0 <6.3.0": "6.3.0",
+      "path-to-regexp@>=8.0.0 <8.4.0": "8.4.0",
+      "postcss": "8.5.15",
+      "smol-toml": "1.6.1",
+      "srvx": "0.11.13",
+      "tar": "7.5.15",
+      "undici": "6.25.0"
+    }
   }
 }
