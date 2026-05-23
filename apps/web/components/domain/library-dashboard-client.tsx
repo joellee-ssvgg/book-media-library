@@ -47,31 +47,17 @@ function shortDate(value?: string) {
   return value.slice(0, 10);
 }
 
-function TokenLoader({
-  fieldError,
+function LibraryLoader({
   message,
   pending,
   formAction,
 }: {
-  fieldError?: string[];
   message?: string;
   pending: boolean;
   formAction: (payload: FormData) => void;
 }) {
   return (
     <form action={formAction} className="grid gap-4 border border-[#d8d2c4] bg-[#fffdf8] p-5">
-      <div className="grid gap-2">
-        <label className="text-sm font-medium" htmlFor="libraryAccessToken">
-          Supabase access token
-        </label>
-        <textarea
-          className="min-h-24 resize-y border border-[#c9c2b3] bg-white px-3 py-2 font-mono text-xs outline-none focus:border-[#315f53]"
-          id="libraryAccessToken"
-          name="accessToken"
-          spellCheck={false}
-        />
-        {fieldError?.length ? <p className="text-xs text-[#9a3412]">{fieldError[0]}</p> : null}
-      </div>
       <div className="flex flex-wrap items-center gap-3">
         <OfflineSubmitButton pending={pending} pendingLabel="加载中">
           加载我的库
@@ -290,8 +276,7 @@ export function LibraryDashboardClient({ mode }: LibraryDashboardClientProps) {
   return (
     <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
       <aside className="grid content-start gap-5">
-        <TokenLoader
-          fieldError={state.fieldErrors?.accessToken}
+        <LibraryLoader
           formAction={formAction}
           message={state.message}
           pending={pending}

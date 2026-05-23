@@ -1,6 +1,6 @@
 "use server";
 
-import { createUserScopedSupabase } from "@/lib/supabase/server";
+import { createActionSupabase } from "@/lib/supabase/server";
 import {
   publicProfileSettingsFormSchema,
   type PublicProfileSettingsActionState,
@@ -39,7 +39,7 @@ export async function updatePublicProfileSettingsAction(
     .filter((entryId): entryId is string => Boolean(entryId))
     .map((entry_id) => ({ entry_id }));
 
-  const supabase = createUserScopedSupabase(parsed.data.accessToken);
+  const supabase = await createActionSupabase(parsed.data.accessToken);
 
   if ("error" in supabase) {
     return {

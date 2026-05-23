@@ -26,5 +26,6 @@ RLS policies should compare Supabase Auth identity through `auth.uid()` and reso
 
 - This intentionally deviates from `DB Schema v1.0.0` for the `profiles` primary key meaning.
 - Future migrations must reference `profiles(id)` for app identity and `profiles(auth_user_id)` only for Supabase Auth linkage.
-- `auth_identities` remains a P0 schema-reserved table. P0 creates the `supabase` identity automatically on signup and does not enable third-party OAuth flows.
+- `auth_identities` remains a P0 schema-reserved table for providers beyond the acceptance path. P0 creates the `supabase` identity automatically for non-OAuth Supabase Auth users.
+- ADR-058 qualifies the original no-OAuth consequence: GitHub OAuth is enabled for P0 live acceptance because the P0 acceptance script explicitly requires it. No other third-party OAuth provider is enabled for P0.
 - Public views must not expose `id`, `auth_user_id`, audit fields, or `auth_identities`.

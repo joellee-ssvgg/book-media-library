@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { isEnabledMediaTypeId, type EnabledMediaTypeId } from "@/lib/registry";
+import { optionalAccessTokenSchema } from "@/schemas/auth";
 
 const optionalText = z
   .string()
@@ -21,7 +22,7 @@ const optionalYear = z.preprocess(
 
 export const manualWorkFormSchema = z
   .object({
-    accessToken: z.string().trim().min(1, "需要已登录用户的 Supabase access token"),
+    accessToken: optionalAccessTokenSchema,
     mediaType: z
       .string()
       .trim()

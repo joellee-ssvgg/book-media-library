@@ -1,6 +1,6 @@
 # Task 01 Readiness Check
 
-更新时间: 2026-05-21
+更新时间: 2026-05-22
 
 ## 目的
 
@@ -48,12 +48,12 @@ chmod +x scripts/check-task-01-readiness.sh
 - 脚本只检查 `.env.local` 是否存在必需 key，不输出 key 的值。
 - 脚本不会调用 production 环境。
 - 脚本不会使用 service role key 执行业务查询。
-- 脚本不会把缺失的 Supabase/Vercel/Upstash/Sentry/TMDB 替换成本地 mock。
+- 脚本不会把缺失的 Supabase/Vercel/Upstash/Sentry/TMDB/Google Books 替换成本地 mock。
 
 ## 当前状态
 
-2026-05-21 实测脚本返回 `READY: Task 01 startup gates passed. warnings=0`。
+2026-05-22 实测脚本返回 `READY: Task 01 startup gates passed. warnings=0`。
 
-当前必需源码文档、git、Node、pnpm、Docker、Supabase、GitHub、Vercel、`.env.local` 与必需环境变量检查通过。
+当前必需源码文档、git、Node、pnpm、Docker、Supabase、GitHub、Vercel、`.env.local` 与必需环境变量检查均通过。`GOOGLE_BOOKS_API_KEY` 已写入本地 `.env.local`，Google Books API 只读请求返回 `200` 且有结果。
 
-Task 01 只有在脚本返回 `READY`，并且阻断项文档不再列出未解除项后，才允许把启动门禁视为通过。
+Task 01 当前启动门禁可视为通过。后续如果外部 SaaS 登录态、token scope、远端 env 或本地 `.env.local` 发生变化，必须重新运行脚本并同步阻断项文档。

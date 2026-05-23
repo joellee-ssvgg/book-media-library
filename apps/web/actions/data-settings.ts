@@ -1,7 +1,7 @@
 "use server";
 
 import { createStoredZipBase64 } from "@/lib/mspf/zip";
-import { createUserScopedSupabase } from "@/lib/supabase/server";
+import { createActionSupabase } from "@/lib/supabase/server";
 import {
   accountDeletionFormSchema,
   dataExportFormSchema,
@@ -60,7 +60,7 @@ export async function generateMspfExportAction(
     };
   }
 
-  const supabase = createUserScopedSupabase(parsed.data.accessToken);
+  const supabase = await createActionSupabase(parsed.data.accessToken);
 
   if ("error" in supabase) {
     return {
@@ -141,7 +141,7 @@ export async function requestAccountDeletionAction(
     };
   }
 
-  const supabase = createUserScopedSupabase(parsed.data.accessToken);
+  const supabase = await createActionSupabase(parsed.data.accessToken);
 
   if ("error" in supabase) {
     return {

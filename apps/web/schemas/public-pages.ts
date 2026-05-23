@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { optionalAccessTokenSchema } from "@/schemas/auth";
 
 export type PublicEntryCard = {
   entry_id: string;
@@ -88,7 +89,7 @@ export type PublicWorkData =
     };
 
 export const publicProfileSettingsFormSchema = z.object({
-  accessToken: z.string().trim().min(1, "access token 必填"),
+  accessToken: optionalAccessTokenSchema,
   publicVisibility: z.enum(["private", "unlisted", "followers", "public"]),
   topEntryId1: z.string().trim().optional(),
   topEntryId2: z.string().trim().optional(),

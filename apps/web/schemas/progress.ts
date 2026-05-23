@@ -1,9 +1,10 @@
 import { z } from "zod";
+import { optionalAccessTokenSchema } from "@/schemas/auth";
 
 const progressPayloadSchema = z.record(z.string(), z.unknown());
 
 export const recordProgressFormSchema = z.object({
-  accessToken: z.string().min(1, "accessToken is required"),
+  accessToken: optionalAccessTokenSchema,
   entryId: z.uuid(),
   progressModelKey: z.enum(["book_page_progress", "watch_log"]),
   eventType: z.enum(["progress_set", "session_logged", "completed", "abandoned"]),

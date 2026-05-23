@@ -20,26 +20,6 @@ function fieldError(errors: string[] | undefined) {
   return <p className="mt-1 text-xs text-[#9a3412]">{errors[0]}</p>;
 }
 
-type AccessTokenFieldProps = {
-  id: string;
-};
-
-function AccessTokenField({ id }: AccessTokenFieldProps) {
-  return (
-    <div className="grid gap-2">
-      <label className="text-sm font-medium" htmlFor={id}>
-        Supabase access token
-      </label>
-      <textarea
-        className="min-h-24 resize-y border border-[#c9c2b3] bg-white px-3 py-2 font-mono text-xs outline-none focus:border-[#315f53]"
-        id={id}
-        name="accessToken"
-        spellCheck={false}
-      />
-    </div>
-  );
-}
-
 export function DataSettingsClient() {
   const [exportState, exportAction, exportPending] = useActionState(
     generateMspfExportAction,
@@ -60,9 +40,6 @@ export function DataSettingsClient() {
           <p className="text-xs uppercase tracking-[0.18em] text-[#6c675f]">Export</p>
           <h2 className="mt-1 text-xl font-semibold">MSPF v1.0.0</h2>
         </div>
-
-        <AccessTokenField id="dataExportAccessToken" />
-        {fieldError(exportState.fieldErrors?.accessToken)}
 
         <div className="flex flex-wrap items-start gap-3">
           <OfflineSubmitButton pending={exportPending} pendingLabel="生成中">
@@ -103,9 +80,6 @@ export function DataSettingsClient() {
           <p className="text-xs uppercase tracking-[0.18em] text-[#6c675f]">Delete</p>
           <h2 className="mt-1 text-xl font-semibold">注销双通道</h2>
         </div>
-
-        <AccessTokenField id="accountDeletionAccessToken" />
-        {fieldError(deletionState.fieldErrors?.accessToken)}
 
         <div className="grid gap-2">
           <label className="text-sm font-medium" htmlFor="deletionChannel">

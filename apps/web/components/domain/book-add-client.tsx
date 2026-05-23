@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 
 import { addBookEntryAction } from "@/actions/book-add";
 import { OfflineSubmitButton } from "@/components/domain/offline-submit-button";
@@ -16,13 +16,7 @@ type BookAddClientProps = {
   notices: ProviderSearchNotice[];
 };
 
-function CandidateForm({
-  accessToken,
-  candidate,
-}: {
-  accessToken: string;
-  candidate: BookCandidateView;
-}) {
+function CandidateForm({ candidate }: { candidate: BookCandidateView }) {
   const [state, formAction, pending] = useActionState(
     addBookEntryAction,
     initialAddBookEntryActionState,
@@ -30,7 +24,6 @@ function CandidateForm({
 
   return (
     <form action={formAction} className="grid gap-4 border border-[#d8d2c4] bg-[#fffdf8] p-4">
-      <input name="accessToken" type="hidden" value={accessToken} />
       <input name="provider" type="hidden" value={candidate.provider} />
       <input name="externalId" type="hidden" value={candidate.externalId} />
 
@@ -95,8 +88,6 @@ function CandidateForm({
 }
 
 export function BookAddClient({ query, candidates, notices }: BookAddClientProps) {
-  const [accessToken, setAccessToken] = useState("");
-
   return (
     <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
       <aside className="grid content-start gap-5 border border-[#d8d2c4] bg-[#fffdf8] p-5">
@@ -115,19 +106,6 @@ export function BookAddClient({ query, candidates, notices }: BookAddClientProps
             搜索
           </button>
         </form>
-
-        <div className="grid gap-2">
-          <label className="text-sm font-medium" htmlFor="bookAccessToken">
-            Supabase access token
-          </label>
-          <textarea
-            className="min-h-28 resize-y border border-[#c9c2b3] bg-white px-3 py-2 font-mono text-xs outline-none focus:border-[#315f53]"
-            id="bookAccessToken"
-            onChange={(event) => setAccessToken(event.target.value)}
-            spellCheck={false}
-            value={accessToken}
-          />
-        </div>
 
         {notices.length ? (
           <div className="grid gap-2 border border-[#ead6ab] bg-[#fff8e8] p-3 text-xs text-[#5f665f]">
@@ -149,7 +127,6 @@ export function BookAddClient({ query, candidates, notices }: BookAddClientProps
 
         {candidates.map((candidate) => (
           <CandidateForm
-            accessToken={accessToken}
             candidate={candidate}
             key={`${candidate.provider}:${candidate.externalId}`}
           />

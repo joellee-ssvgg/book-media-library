@@ -2,7 +2,7 @@
 
 import { genericCsvToImportPayload } from "@/lib/import/generic-csv";
 import { mspfToImportPayload } from "@/lib/mspf/validate";
-import { createUserScopedSupabase } from "@/lib/supabase/server";
+import { createActionSupabase } from "@/lib/supabase/server";
 import {
   completeOnboardingFormSchema,
   onboardingImportFormSchema,
@@ -95,7 +95,7 @@ export async function completeOnboardingAction(
   }
 
   const { accessToken, ...input } = parsed.data;
-  const supabase = createUserScopedSupabase(accessToken);
+  const supabase = await createActionSupabase(accessToken);
 
   if ("error" in supabase) {
     return {
@@ -165,7 +165,7 @@ export async function enqueueOnboardingImportAction(
     };
   }
 
-  const supabase = createUserScopedSupabase(parsed.data.accessToken);
+  const supabase = await createActionSupabase(parsed.data.accessToken);
 
   if ("error" in supabase) {
     return {
