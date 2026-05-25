@@ -80,7 +80,7 @@ export async function signUpWithPasswordAction(_previousState, formData) {
 
   const origin = await getOrigin();
   const next = normalizeAuthNextPath(parsed.data.next);
-  const redirectTo = new URL("/auth/callback", origin);
+  const redirectTo = new URL("/auth/confirm", origin);
   redirectTo.searchParams.set("next", next);
 
   const { data, error } = await supabase.auth.signUp({
@@ -127,7 +127,7 @@ export async function forgotPasswordAction(_previousState, formData) {
   }
 
   const origin = await getOrigin();
-  const redirectTo = new URL("/auth/callback", origin);
+  const redirectTo = new URL("/auth/confirm", origin);
   redirectTo.searchParams.set("next", "/auth/reset-password");
 
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
