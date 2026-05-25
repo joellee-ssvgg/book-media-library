@@ -16,7 +16,7 @@ export function AddWorkModal({ open, onOpenChange, defaultTab = "book" }) {
   const debounceRef = useRef(null);
 
   useEffect(() => {
-    if (!query || query.length < 2) { setResults([]); return; }
+    if (!query || query.length < 2) return;
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
@@ -29,6 +29,8 @@ export function AddWorkModal({ open, onOpenChange, defaultTab = "book" }) {
     }, 300);
     return () => clearTimeout(debounceRef.current);
   }, [query, tab]);
+
+  const visibleResults = !query || query.length < 2 ? [] : results;
 
   const handleAdd = useCallback(async (item) => {
     setAdded(item.externalId);
@@ -70,10 +72,10 @@ export function AddWorkModal({ open, onOpenChange, defaultTab = "book" }) {
 
         <div className="max-h-[50vh] overflow-y-auto">
           {loading && <p className="py-8 text-center text-sm text-muted-foreground">搜索中...</p>}
-          {!loading && results.length === 0 && query.length >= 2 && (
+          {!loading && visibleResults.length === 0 && query.length >= 2 && (
             <p className="py-8 text-center text-sm text-muted-foreground">未找到结果</p>
           )}
-          {results.map((item) => (
+          {visibleResults.map((item) => (
             <SearchResultCard key={item.externalId} item={item} onAdd={handleAdd} added={added === item.externalId} />
           ))}
         </div>

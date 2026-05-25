@@ -1,4 +1,5 @@
-import { BookOpen, Eye, Lock, Film } from "lucide-react";
+import Link from "next/link";
+import { BookOpen, Eye, Lock } from "lucide-react";
 
 export default function LandingPage() {
   return (
@@ -12,18 +13,18 @@ export default function LandingPage() {
             记录每一本读过的书、每一部看过的电影。默认私密，精选公开。
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <a
+            <Link
               href="/auth/sign-in"
               className="inline-flex h-11 items-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground no-underline transition-colors hover:bg-primary/90"
             >
               进入我的书房
-            </a>
-            <a
+            </Link>
+            <Link
               href="/u/joel"
               className="inline-flex h-11 items-center rounded-md border border-border px-6 text-sm font-medium text-foreground no-underline transition-colors hover:bg-accent"
             >
               看看示例主页
-            </a>
+            </Link>
           </div>
         </div>
 
