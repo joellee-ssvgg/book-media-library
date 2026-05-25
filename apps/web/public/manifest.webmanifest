@@ -1,6 +1,6 @@
 {
-  "name": "书影计划",
-  "short_name": "书影",
+  "name": "阅迹",
+  "short_name": "阅迹",
   "description": "Personal book and movie library platform",
   "start_url": "/",
   "scope": "/",

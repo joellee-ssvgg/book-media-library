@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@source "../app/**/*.{js,jsx}";
+@source "../components/**/*.{js,jsx}";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.625rem;
+  --background: 0 0% 97%;
+  --foreground: 210 20% 18%;
+  --card: 0 0% 100%;
+  --card-foreground: 210 20% 18%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 210 20% 18%;
+  --primary: 201 50% 35%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 200 10% 90%;
+  --secondary-foreground: 210 20% 18%;
+  --muted: 60 5% 93%;
+  --muted-foreground: 200 10% 40%;
+  --accent: 200 10% 93%;
+  --accent-foreground: 210 20% 18%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 200 10% 88%;
+  --input: 200 10% 88%;
+  --ring: 201 50% 35%;
+  --chart-1: 201 50% 35%;
+  --chart-2: 200 40% 55%;
+  --chart-3: 160 30% 45%;
+  --chart-4: 40 60% 55%;
+  --chart-5: 340 50% 55%;
+  --page-bg: #F7F8F7;
+  --yankees-blue: #22303F;
+  --charcoal: #394A56;
+  --platinum: #E7E8E7;
+  --bdazzled-blue: #2C6485;
+  --dark-sky-blue: #8FBFDA;
+}
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+body {
+  background: var(--page-bg);
+  color: hsl(var(--foreground));
+}
+
+.meta-label {
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
