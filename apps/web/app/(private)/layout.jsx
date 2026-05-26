@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { createCookieSupabaseClient } from "@/lib/supabase/auth";
+import { firstUsableProfile } from "@/lib/supabase/private-shell-profile";
 
 async function loadPrivateShellProfile() {
   const supabase = await createCookieSupabaseClient();
@@ -21,13 +22,19 @@ async function loadPrivateShellProfile() {
     .select("username")
     .eq("auth_user_id", user.id)
     .is("deleted_at", null)
-    .single();
+    .order("created_at", { ascending: true })
+    .limit(1);
 
-  if (error || !data?.username) {
-    throw new Error(error?.message ?? "Authenticated profile username is missing.");
+  if (error) {
+    throw new Error(error.message);
   }
 
-  return data;
+  const profile = firstUsableProfile(data);
+  if (!profile) {
+    redirect("/auth/sign-out");
+  }
+
+  return profile;
 }
 
 export default async function PrivateLayout({ children }) {
