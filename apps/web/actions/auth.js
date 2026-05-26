@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createCookieSupabaseClient, normalizeAuthNextPath } from "@/lib/supabase/auth";
 import {
@@ -56,7 +57,13 @@ export async function signInWithPasswordAction(_previousState, formData) {
   }
 
   const next = normalizeAuthNextPath(parsed.data.next);
-  redirect(next);
+  revalidatePath("/", "layout");
+  return {
+    status: "success",
+    message: "登录成功，正在进入。",
+    fieldErrors: undefined,
+    redirectTo: next,
+  };
 }
 
 export async function signUpWithPasswordAction(_previousState, formData) {
