@@ -67,6 +67,7 @@ export async function requestJson(url, fetchImpl, timeoutMs = 8000) {
         const response = await resolvedFetch(url, {
             headers: {
                 Accept: "application/json",
+                "User-Agent": "BookMediaLibrary/0.1.0",
             },
             signal: controller.signal,
         });

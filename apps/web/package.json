@@ -7,10 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "echo \"typecheck skipped: project is JavaScript\"",
+    "typecheck": "tsc -p jsconfig.json --noEmit --allowJs --checkJs false --skipLibCheck --pretty false",
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@next/env": "16.2.6",
     "@base-ui/react": "^1.5.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.1",
@@ -30,6 +31,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
+    "typescript": "5.9.3",
     "vitest": "^4.0.0"
   }
 }

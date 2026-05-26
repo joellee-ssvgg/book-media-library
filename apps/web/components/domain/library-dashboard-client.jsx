@@ -4,10 +4,9 @@ import { useActionState, useEffect, useMemo, startTransition } from "react";
 import { loadLibraryDashboardAction } from "@/actions/library-dashboard";
 import { initialLibraryDashboardActionState } from "@/schemas/library-dashboard";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookOpen, Film, Sparkles, RefreshCw, TrendingUp, CalendarDays, Target } from "lucide-react";
+import { BookOpen, Film, Sparkles, RefreshCw, CalendarDays, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const STATUS_LABELS = {

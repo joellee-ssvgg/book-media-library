@@ -85,6 +85,20 @@ describe("Provider Adapter", () => {
             },
         });
     });
+    it("sends a product User-Agent with provider JSON requests", async () => {
+        let headers;
+        const fetchImpl = async (_url, init) => {
+            headers = init.headers;
+            return jsonResponse({ docs: [] });
+        };
+        const provider = createOpenLibraryProvider({ fetch: fetchImpl });
+        const result = await provider.search({ mediaType: "book", text: "Dune" });
+        expect(result.ok).toBe(true);
+        expect(headers).toMatchObject({
+            Accept: "application/json",
+            "User-Agent": "BookMediaLibrary/0.1.0",
+        });
+    });
     it("normalizes TMDB movie records with runtime and poster metadata", async () => {
         const fetchImpl = async () => jsonResponse({
             id: 27205,

@@ -35,7 +35,6 @@ export function AddWorkModal({ open, onOpenChange, defaultTab = "book" }) {
   const [error, setError] = useState(null);
 
   const handleAdd = useCallback(async (item) => {
-    setAdded(item.externalId);
     setError(null);
     try {
       const res = await fetch("/api/add-entry", {
@@ -48,7 +47,11 @@ export function AddWorkModal({ open, onOpenChange, defaultTab = "book" }) {
         }),
       });
       const data = await res.json();
-      if (!res.ok) setError(data.error || "添加失败");
+      if (!res.ok) {
+        setError(data.error || "添加失败");
+        return;
+      }
+      setAdded(item.externalId);
     } catch (e) { setError(e.message); }
   }, [tab]);
 
@@ -108,7 +111,10 @@ function SearchResultCard({ item, onAdd, added }) {
   return (
     <div className="flex gap-3 border-b border-border px-1 py-3 last:border-0">
       <div className="h-16 w-11 shrink-0 overflow-hidden rounded bg-muted">
-        {item.coverUrl && <img src={item.coverUrl} alt="" className="h-full w-full object-cover" />}
+        {item.coverUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={item.coverUrl} alt="" className="h-full w-full object-cover" />
+        )}
       </div>
       <div className="flex-1 min-w-0">
         <p className="truncate text-sm font-medium">{item.title}</p>
@@ -116,7 +122,13 @@ function SearchResultCard({ item, onAdd, added }) {
           {item.creators?.join(", ")} {item.releaseYear && `· ${item.releaseYear}`}
         </p>
       </div>
-      <Button size="sm" variant={added ? "ghost" : "outline"} onClick={() => onAdd(item)} disabled={added}>
+      <Button
+        size="sm"
+        variant={added ? "ghost" : "outline"}
+        onClick={() => onAdd(item)}
+        disabled={added}
+        aria-label={added ? `已添加 ${item.title}` : `添加 ${item.title}`}
+      >
         {added ? <Check className="size-4" /> : <Plus className="size-4" />}
       </Button>
     </div>

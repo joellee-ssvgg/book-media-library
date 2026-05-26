@@ -49,10 +49,10 @@ function MobileBottomTab() {
   );
 }
 
-export function AppShell({ children }) {
+export function AppShell({ children, publicProfileHref }) {
   return (
     <div className="flex min-h-screen">
-      <AppSidebar />
+      <AppSidebar publicProfileHref={publicProfileHref} />
       <main className="flex-1 pb-16 md:pb-0">
         {children}
       </main>

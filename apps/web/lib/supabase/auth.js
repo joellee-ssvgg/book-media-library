@@ -32,10 +32,15 @@ export async function createCookieSupabaseClient() {
             },
             setAll(cookiesToSet) {
                 cookiesToSet.forEach(({ name, value, options }) => {
-                    cookieStore.set(name, value, {
-                        ...options,
-                        path: options.path ?? "/",
-                    });
+                    try {
+                        cookieStore.set(name, value, {
+                            ...options,
+                            path: options.path ?? "/",
+                        });
+                    }
+                    catch {
+                        // Server Components cannot write refreshed auth cookies; middleware/actions handle writes.
+                    }
                 });
             },
         },

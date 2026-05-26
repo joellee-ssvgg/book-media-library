@@ -12,6 +12,13 @@ function supabaseRestRpcUrl(functionName) {
     }
     return `${supabaseUrl.replace(/\/$/, "")}/rest/v1/rpc/${functionName}`;
 }
+function supabaseAuthUserUrl() {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (!supabaseUrl) {
+        return null;
+    }
+    return `${supabaseUrl.replace(/\/$/, "")}/auth/v1/user`;
+}
 function supabasePublicProfileRpcUrl() {
     return supabaseRestRpcUrl("task17_public_profile_state");
 }
@@ -32,11 +39,26 @@ function maybeJwt(value) {
     }
     return token;
 }
-function tokenFromCookieValue(value) {
+function decodeBase64CookieValue(value) {
+    if (!value.startsWith("base64-")) {
+        return value;
+    }
+    const encoded = value.slice("base64-".length);
+    const normalized = encoded.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
+    return atob(padded);
+}
+export function tokenFromCookieValue(value) {
     if (!value) {
         return null;
     }
-    const rawValue = decodeURIComponent(value);
+    let rawValue;
+    try {
+        rawValue = decodeBase64CookieValue(decodeURIComponent(value));
+    }
+    catch {
+        return null;
+    }
     const directToken = maybeJwt(rawValue);
     if (directToken) {
         return directToken;
@@ -133,13 +155,23 @@ async function task20RateLimitResponse(request) {
         status: 429,
     });
 }
-function hasSupabaseSession(request) {
-    for (const cookie of request.cookies.getAll()) {
-        if (cookie.name.startsWith("sb-") && cookie.name.includes("-auth-token")) {
-            return true;
-        }
+async function hasValidSupabaseSession(request) {
+    const accessToken = extractAccessToken(request);
+    if (!accessToken) {
+        return false;
     }
-    return false;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const userUrl = supabaseAuthUserUrl();
+    if (!anonKey || !userUrl) {
+        return false;
+    }
+    const response = await fetch(userUrl, {
+        headers: {
+            apikey: anonKey,
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+    return response.ok;
 }
 export async function proxy(request) {
     const limited = await task20RateLimitResponse(request);
@@ -147,7 +179,9 @@ export async function proxy(request) {
         return limited;
     }
     const pathname = request.nextUrl.pathname;
-    const hasToken = hasSupabaseSession(request);
+    const hasToken = pathname === "/" || privatePathPattern.test(pathname)
+        ? await hasValidSupabaseSession(request)
+        : false;
     if (pathname === "/") {
         const dest = hasToken ? "/dashboard" : "/auth/sign-in";
         return NextResponse.redirect(new URL(dest, request.url));
