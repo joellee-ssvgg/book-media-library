@@ -63,7 +63,7 @@ function extractAccessToken(request) {
     for (const cookie of request.cookies.getAll()) {
         const isSupabaseAuthCookie = cookie.name === "sb-access-token" ||
             cookie.name === "supabase-auth-token" ||
-            (cookie.name.startsWith("sb-") && cookie.name.endsWith("-auth-token"));
+            (cookie.name.startsWith("sb-") && cookie.name.includes("-auth-token"));
         if (!isSupabaseAuthCookie) {
             continue;
         }
@@ -133,13 +133,21 @@ async function task20RateLimitResponse(request) {
         status: 429,
     });
 }
+function hasSupabaseSession(request) {
+    for (const cookie of request.cookies.getAll()) {
+        if (cookie.name.startsWith("sb-") && cookie.name.includes("-auth-token")) {
+            return true;
+        }
+    }
+    return false;
+}
 export async function proxy(request) {
     const limited = await task20RateLimitResponse(request);
     if (limited) {
         return limited;
     }
     const pathname = request.nextUrl.pathname;
-    const hasToken = !!extractAccessToken(request);
+    const hasToken = hasSupabaseSession(request);
     if (pathname === "/") {
         const dest = hasToken ? "/dashboard" : "/auth/sign-in";
         return NextResponse.redirect(new URL(dest, request.url));
