@@ -12,7 +12,7 @@ export function getSupabaseAuthConfig() {
 }
 export function normalizeAuthNextPath(value) {
     if (!value || !value.startsWith("/") || value.startsWith("//")) {
-        return "/onboarding";
+        return "/dashboard";
     }
     return value;
 }
