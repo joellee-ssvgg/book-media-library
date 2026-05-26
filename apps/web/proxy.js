@@ -77,24 +77,52 @@ export function tokenFromCookieValue(value) {
     }
     return null;
 }
-function extractAccessToken(request) {
-    const authorization = request.headers.get("authorization");
-    if (authorization?.toLowerCase().startsWith("bearer ")) {
-        return maybeJwt(authorization.slice("bearer ".length));
+function supabaseAuthCookieBaseName(name) {
+    if (name === "sb-access-token" || name === "supabase-auth-token") {
+        return name;
     }
-    for (const cookie of request.cookies.getAll()) {
-        const isSupabaseAuthCookie = cookie.name === "sb-access-token" ||
-            cookie.name === "supabase-auth-token" ||
-            (cookie.name.startsWith("sb-") && cookie.name.includes("-auth-token"));
-        if (!isSupabaseAuthCookie) {
-            continue;
+    if (!name.startsWith("sb-") || !name.includes("-auth-token")) {
+        return null;
+    }
+    return name.replace(/[.](0|[1-9][0-9]*)$/, "");
+}
+function combinedCookieValue(cookies, baseName) {
+    const direct = cookies.find((cookie) => cookie.name === baseName);
+    if (direct?.value) {
+        return direct.value;
+    }
+    const chunks = [];
+    for (let index = 0;; index += 1) {
+        const chunk = cookies.find((cookie) => cookie.name === `${baseName}.${index}`);
+        if (!chunk?.value) {
+            break;
         }
-        const token = tokenFromCookieValue(cookie.value);
+        chunks.push(chunk.value);
+    }
+    return chunks.length > 0 ? chunks.join("") : null;
+}
+export function accessTokenFromCookies(cookies) {
+    const baseNames = new Set();
+    for (const cookie of cookies) {
+        const baseName = supabaseAuthCookieBaseName(cookie.name);
+        if (baseName) {
+            baseNames.add(baseName);
+        }
+    }
+    for (const baseName of baseNames) {
+        const token = tokenFromCookieValue(combinedCookieValue(cookies, baseName));
         if (token) {
             return token;
         }
     }
     return null;
+}
+export function extractAccessToken(request) {
+    const authorization = request.headers.get("authorization");
+    if (authorization?.toLowerCase().startsWith("bearer ")) {
+        return maybeJwt(authorization.slice("bearer ".length));
+    }
+    return accessTokenFromCookies(request.cookies.getAll());
 }
 async function resolveTask20ProfileId(request) {
     const accessToken = extractAccessToken(request);
