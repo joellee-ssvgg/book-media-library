@@ -34,8 +34,18 @@ export function AddWorkModal({ open, onOpenChange, defaultTab = "book" }) {
 
   const handleAdd = useCallback(async (item) => {
     setAdded(item.externalId);
-    setTimeout(() => setAdded(null), 2000);
-  }, []);
+    try {
+      await fetch("/api/add-entry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider: item.provider,
+          externalId: item.externalId,
+          type: tab === "book" ? "book" : "movie",
+        }),
+      });
+    } catch {}
+  }, [tab]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
