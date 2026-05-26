@@ -58,12 +58,7 @@ export async function signInWithPasswordAction(_previousState, formData) {
 
   const next = normalizeAuthNextPath(parsed.data.next);
   revalidatePath("/", "layout");
-  return {
-    status: "success",
-    message: "登录成功，正在进入。",
-    fieldErrors: undefined,
-    redirectTo: next,
-  };
+  redirect(next);
 }
 
 export async function signUpWithPasswordAction(_previousState, formData) {
