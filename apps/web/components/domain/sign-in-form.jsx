@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState } from "react";
 import { signInWithPasswordAction } from "@/actions/auth";
 import { initialAuthActionState } from "@/schemas/auth-email";
 import { Input } from "@/components/ui/input";
@@ -27,17 +27,6 @@ export function SignInForm({ next = "" }) {
     signInWithPasswordAction,
     initialAuthActionState
   );
-  const redirectingRef = useRef(false);
-  const isRedirecting = state.status === "success";
-
-  useEffect(() => {
-    if (!isRedirecting || !state.redirectTo || redirectingRef.current) {
-      return;
-    }
-
-    redirectingRef.current = true;
-    window.location.replace(state.redirectTo);
-  }, [isRedirecting, state.redirectTo]);
 
   const oauthHref = next
     ? `/auth/oauth/github?next=${encodeURIComponent(next)}`
@@ -89,14 +78,8 @@ export function SignInForm({ next = "" }) {
           </p>
         ) : null}
 
-        {isRedirecting && state.message ? (
-          <p className="rounded-md bg-green-50 px-3 py-2 text-xs text-green-700">
-            {state.message}
-          </p>
-        ) : null}
-
-        <Button type="submit" className="w-full" disabled={pending || isRedirecting}>
-          {isRedirecting ? "进入中…" : pending ? "登录中…" : "登录"}
+        <Button type="submit" className="w-full" disabled={pending}>
+          {pending ? "登录中…" : "登录"}
         </Button>
       </form>
 
