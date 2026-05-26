@@ -23,7 +23,7 @@ export function AddWorkModal({ open, onOpenChange, defaultTab = "book" }) {
       try {
         const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&type=${tab === "book" ? "book" : "movie"}`);
         const data = await res.json();
-        setResults(data.results || []);
+        setResults(data.results?.candidates || data.results || []);
       } catch { setResults([]); }
       setLoading(false);
     }, 300);
