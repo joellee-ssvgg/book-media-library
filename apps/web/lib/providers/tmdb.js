@@ -1,6 +1,8 @@
 import { err, ok } from "./result";
 import { asInteger, asRecord, asRecordArray, firstText, parseYear, requestJson } from "./utils";
+import { loadWorkspaceEnv } from "@/lib/workspace-env";
 function tmdbApiKey(environment) {
+    loadWorkspaceEnv();
     return environment.tmdbApiKey ?? process.env.TMDB_API_KEY;
 }
 function posterUrl(path) {

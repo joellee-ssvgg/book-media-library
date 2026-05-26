@@ -11,7 +11,7 @@ const groupedNav = privateNavItems.reduce((groups, item) => {
   return groups;
 }, {});
 
-export function AppSidebar() {
+export function AppSidebar({ publicProfileHref }) {
   const pathname = usePathname();
 
   return (
@@ -53,7 +53,7 @@ export function AppSidebar() {
       </nav>
 
       <div className="mt-auto grid gap-2 border-t border-border pt-4">
-        <Link className="flex items-center gap-2 text-sm text-muted-foreground no-underline transition-colors hover:text-primary" href="/">
+        <Link className="flex items-center gap-2 text-sm text-muted-foreground no-underline transition-colors hover:text-primary" href={publicProfileHref}>
           <span>查看公开主页</span>
           <ExternalLink className="size-3.5" />
         </Link>

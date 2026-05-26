@@ -2,6 +2,7 @@ import { PwaRuntime } from "@/components/domain/pwa-runtime";
 import "./styles.css";
 
 export const metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
   title: "阅迹",
   description: "你的私人书影记录平台",
   manifest: "/manifest.webmanifest",

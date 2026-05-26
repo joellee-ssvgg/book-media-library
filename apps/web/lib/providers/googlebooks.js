@@ -1,6 +1,8 @@
 import { err, ok } from "./result";
 import { asRecord, asRecordArray, asStringArray, firstText, parseYear, requestJson } from "./utils";
+import { loadWorkspaceEnv } from "@/lib/workspace-env";
 function googleBooksApiKey(environment) {
+    loadWorkspaceEnv();
     return environment.googleBooksApiKey ?? process.env.GOOGLE_BOOKS_API_KEY;
 }
 function isbnExternalIds(industryIdentifiers) {
