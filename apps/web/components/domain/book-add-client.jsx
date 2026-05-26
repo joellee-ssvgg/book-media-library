@@ -63,7 +63,7 @@ function CandidateForm({ candidate }) {
 export function BookAddClient({ query, candidates, notices }) {
     return (<div className="grid gap-6 lg:grid-cols-[320px_1fr]">
       <aside className="grid content-start gap-5 border border-[#d8d2c4] bg-[#fffdf8] p-5">
-        <form className="grid gap-3" method="get">
+        <form className="grid gap-3" action="/add/book" method="get">
           <label className="text-sm font-medium" htmlFor="query">
             书名搜索
           </label>
