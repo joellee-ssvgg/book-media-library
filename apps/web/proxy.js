@@ -4,6 +4,7 @@ import { shouldApplyTask20RateLimit } from "@/lib/rate-limit/config";
 import { evaluateTask20RateLimit } from "@/lib/rate-limit/store";
 import { createUpstashRateLimitStore } from "@/lib/rate-limit/upstash";
 const publicProfilePattern = /^\/u\/([^/]+)$/;
+const privatePathPattern = /^\/(dashboard|library|lists|settings|add)(\/|$)/;
 function supabaseRestRpcUrl(functionName) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     if (!supabaseUrl) {
@@ -137,7 +138,18 @@ export async function proxy(request) {
     if (limited) {
         return limited;
     }
-    const match = request.nextUrl.pathname.match(publicProfilePattern);
+    const pathname = request.nextUrl.pathname;
+    const hasToken = !!extractAccessToken(request);
+    if (pathname === "/") {
+        const dest = hasToken ? "/dashboard" : "/auth/sign-in";
+        return NextResponse.redirect(new URL(dest, request.url));
+    }
+    if (privatePathPattern.test(pathname) && !hasToken) {
+        const signIn = new URL("/auth/sign-in", request.url);
+        signIn.searchParams.set("next", pathname);
+        return NextResponse.redirect(signIn);
+    }
+    const match = pathname.match(publicProfilePattern);
     if (!match) {
         return NextResponse.next();
     }
