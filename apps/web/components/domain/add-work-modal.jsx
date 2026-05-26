@@ -32,10 +32,13 @@ export function AddWorkModal({ open, onOpenChange, defaultTab = "book" }) {
 
   const visibleResults = !query || query.length < 2 ? [] : results;
 
+  const [error, setError] = useState(null);
+
   const handleAdd = useCallback(async (item) => {
     setAdded(item.externalId);
+    setError(null);
     try {
-      await fetch("/api/add-entry", {
+      const res = await fetch("/api/add-entry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -44,7 +47,9 @@ export function AddWorkModal({ open, onOpenChange, defaultTab = "book" }) {
           type: tab === "book" ? "book" : "movie",
         }),
       });
-    } catch {}
+      const data = await res.json();
+      if (!res.ok) setError(data.error || "添加失败");
+    } catch (e) { setError(e.message); }
   }, [tab]);
 
   return (
@@ -93,6 +98,7 @@ export function AddWorkModal({ open, onOpenChange, defaultTab = "book" }) {
         <p className="text-center text-xs text-muted-foreground">
           找不到？<a href={tab === "book" ? "/add/book" : "/add/movie"} className="text-primary hover:underline">手动添加 →</a>
         </p>
+        {error && <p className="text-center text-xs text-destructive">{error}</p>}
       </DialogContent>
     </Dialog>
   );
