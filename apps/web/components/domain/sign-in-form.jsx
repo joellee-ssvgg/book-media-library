@@ -1,9 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
-import { signInWithPasswordAction } from "@/actions/auth";
-import { initialAuthActionState } from "@/schemas/auth-email";
+import { useFormStatus } from "react-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -22,19 +20,27 @@ function GithubIcon(props) {
   );
 }
 
-export function SignInForm({ next = "" }) {
-  const [state, formAction, pending] = useActionState(
-    signInWithPasswordAction,
-    initialAuthActionState
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" className="w-full" disabled={pending}>
+      {pending ? "登录中…" : "登录"}
+    </Button>
   );
+}
 
+export function SignInForm({ next = "", error = "" }) {
   const oauthHref = next
     ? `/auth/oauth/github?next=${encodeURIComponent(next)}`
     : "/auth/oauth/github";
 
   return (
     <div className="space-y-4">
-      <form action={formAction} className="space-y-4">
+      {error ? (
+        <p className="rounded-md bg-red-50 px-3 py-2 text-xs text-red-700">{error}</p>
+      ) : null}
+
+      <form action="/auth/password/sign-in" method="POST" className="space-y-4">
         <input type="hidden" name="next" value={next} />
         <div className="space-y-2">
           <Label htmlFor="email">邮箱</Label>
@@ -46,9 +52,6 @@ export function SignInForm({ next = "" }) {
             required
             placeholder="you@example.com"
           />
-          {state.fieldErrors?.email ? (
-            <p className="text-xs text-red-600">{state.fieldErrors.email[0]}</p>
-          ) : null}
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -67,20 +70,9 @@ export function SignInForm({ next = "" }) {
             autoComplete="current-password"
             required
           />
-          {state.fieldErrors?.password ? (
-            <p className="text-xs text-red-600">{state.fieldErrors.password[0]}</p>
-          ) : null}
         </div>
 
-        {state.status !== "idle" && state.status !== "success" && state.message ? (
-          <p className="rounded-md bg-red-50 px-3 py-2 text-xs text-red-700">
-            {state.message}
-          </p>
-        ) : null}
-
-        <Button type="submit" className="w-full" disabled={pending}>
-          {pending ? "登录中…" : "登录"}
-        </Button>
+        <SubmitButton />
       </form>
 
       <div className="relative my-2">
