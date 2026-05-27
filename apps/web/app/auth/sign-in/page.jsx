@@ -26,7 +26,7 @@ export default async function SignInPage({ searchParams }) {
         </>
       }
     >
-      <SignInForm next={next} />
+      <SignInForm next={next} error={typeof params?.error === "string" ? params.error : ""} />
     </AuthCard>
   );
 }
