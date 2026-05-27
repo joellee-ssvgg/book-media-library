@@ -12,7 +12,7 @@ export async function POST(request) {
     const url = new URL("/auth/sign-in", request.url);
     url.searchParams.set("error", "请输入邮箱和密码。");
     if (next !== "/dashboard") url.searchParams.set("next", next);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, 303);
   }
 
   const config = getSupabaseAuthConfig();
@@ -20,10 +20,10 @@ export async function POST(request) {
     const url = new URL("/auth/sign-in", request.url);
     url.searchParams.set("error", config.error);
     if (next !== "/dashboard") url.searchParams.set("next", next);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, 303);
   }
 
-  const response = NextResponse.redirect(new URL(next, request.url));
+  const response = NextResponse.redirect(new URL(next, request.url), 303);
 
   const supabase = createServerClient(config.url, config.anonKey, {
     auth: { flowType: "pkce" },
@@ -51,7 +51,7 @@ export async function POST(request) {
     const url = new URL("/auth/sign-in", request.url);
     url.searchParams.set("error", message);
     if (next !== "/dashboard") url.searchParams.set("next", next);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, 303);
   }
 
   response.headers.set("Cache-Control", "private, no-store");
