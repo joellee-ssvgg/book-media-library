@@ -60,73 +60,73 @@ export default async function PublicWorkPage({ params }) {
     const averageRating = data.stats.average_rating_x10
         ? `${(data.stats.average_rating_x10 / 10).toFixed(1)}`
         : "—";
-    return (<div className="min-h-screen bg-[#f7f5ef] text-[#1f2423]">
+    return (<div className="min-h-screen bg-[var(--paper)] text-[var(--ink)]">
       <main className="mx-auto grid min-h-screen w-full max-w-6xl content-start gap-8 px-6 py-8">
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[#d8d2c4] pb-4">
+        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
           <div>
-            <p className="text-sm text-[#6c675f]">{mediaLabel(data.work.media_type)}</p>
+            <p className="text-sm text-[var(--ink-faint)]">{mediaLabel(data.work.media_type)}</p>
             <h1 className="mt-2 max-w-4xl text-3xl font-semibold leading-tight">{data.work.title}</h1>
-            {data.work.original_title ? (<p className="mt-2 text-base text-[#5f665f]">{data.work.original_title}</p>) : null}
+            {data.work.original_title ? (<p className="mt-2 text-base text-[var(--ink-soft)]">{data.work.original_title}</p>) : null}
           </div>
-          <Link className="text-sm font-medium text-[#315f53]" href="/">
+          <Link className="text-sm font-medium text-[var(--blue)]" href="/">
             阅迹
           </Link>
         </header>
 
         <section className="grid gap-6 lg:grid-cols-[220px_1fr]">
-          <div className="aspect-[2/3] border border-[#d8d2c4] bg-[#efe8d8]">
+          <div className="aspect-[2/3] border border-[var(--line)] bg-[var(--paper-deep)]">
             {data.edition?.cover_url ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img alt="" className="h-full w-full object-cover" src={data.edition.cover_url}/>) : null}
           </div>
 
           <div className="grid content-start gap-5">
-            <div className="grid gap-3 border border-[#d8d2c4] bg-[#fffdf8] p-5 md:grid-cols-4">
+            <div className="grid gap-3 border border-[var(--line)] bg-[hsl(var(--card))] p-5 md:grid-cols-4">
               <div>
-                <p className="text-sm text-[#6c675f]">公开条目</p>
+                <p className="text-sm text-[var(--ink-faint)]">公开条目</p>
                 <p className="mt-2 text-2xl font-semibold">{data.stats.public_entries}</p>
               </div>
               <div>
-                <p className="text-sm text-[#6c675f]">完成</p>
+                <p className="text-sm text-[var(--ink-faint)]">完成</p>
                 <p className="mt-2 text-2xl font-semibold">{data.stats.completed}</p>
               </div>
               <div>
-                <p className="text-sm text-[#6c675f]">短评</p>
+                <p className="text-sm text-[var(--ink-faint)]">短评</p>
                 <p className="mt-2 text-2xl font-semibold">{data.stats.reviewed}</p>
               </div>
               <div>
-                <p className="text-sm text-[#6c675f]">均分</p>
+                <p className="text-sm text-[var(--ink-faint)]">均分</p>
                 <p className="mt-2 text-2xl font-semibold">{averageRating}</p>
               </div>
             </div>
 
-            <div className="grid gap-2 text-sm leading-6 text-[#5f665f]">
+            <div className="grid gap-2 text-sm leading-6 text-[var(--ink-soft)]">
               {data.work.year ? <p>年份：{data.work.year}</p> : null}
               {data.work.original_language ? <p>原始语言：{data.work.original_language}</p> : null}
               {data.edition?.page_count ? <p>页数：{data.edition.page_count}</p> : null}
               {data.edition?.runtime_minutes ? <p>片长：{data.edition.runtime_minutes} 分钟</p> : null}
             </div>
 
-            {data.work.description ? (<p className="max-w-3xl text-base leading-7 text-[#3f4945]">{data.work.description}</p>) : null}
+            {data.work.description ? (<p className="max-w-3xl text-base leading-7 text-[var(--ink-soft)]">{data.work.description}</p>) : null}
           </div>
         </section>
 
         <section className="grid gap-4">
           <h2 className="text-xl font-semibold">公开短评</h2>
           {data.recent_reviews.length ? (<div className="grid gap-3">
-              {data.recent_reviews.map((review) => (<article className="border border-[#d8d2c4] bg-[#fffdf8] p-5" key={review.entry_id}>
-                  <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-[#5f665f]">
+              {data.recent_reviews.map((review) => (<article className="border border-[var(--line)] bg-[hsl(var(--card))] p-5" key={review.entry_id}>
+                  <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-[var(--ink-soft)]">
                     <p>
-                      {review.author_username ? (<a className="font-medium text-[#315f53]" href={`/u/${review.author_username}`}>
+                      {review.author_username ? (<a className="font-medium text-[var(--blue)]" href={`/u/${review.author_username}`}>
                           {review.author_name}
                         </a>) : (<span>{review.author_name}</span>)}
                       <span> · {statusLabel(review.status)}</span>
                     </p>
                     <p>{ratingLabel(review.rating_x10)}</p>
                   </div>
-                  {review.review ? (<p className="mt-3 text-base leading-7 text-[#3f4945]">{review.review}</p>) : null}
+                  {review.review ? (<p className="mt-3 text-base leading-7 text-[var(--ink-soft)]">{review.review}</p>) : null}
                 </article>))}
-            </div>) : (<p className="border border-[#d8d2c4] bg-[#fffdf8] p-5 text-sm text-[#5f665f]">
+            </div>) : (<p className="border border-[var(--line)] bg-[hsl(var(--card))] p-5 text-sm text-[var(--ink-soft)]">
               暂无公开短评。
             </p>)}
         </section>

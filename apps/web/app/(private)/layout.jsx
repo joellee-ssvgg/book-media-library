@@ -1,7 +1,23 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { createCookieSupabaseClient } from "@/lib/supabase/auth";
-import { firstUsableProfile } from "@/lib/supabase/private-shell-profile";
+import { ensurePrivateShellProfile } from "@/lib/supabase/private-shell-profile";
+
+function resolveDisplayName(profileRow, user, username) {
+  const candidates = [
+    profileRow?.display_name,
+    user?.user_metadata?.display_name,
+    user?.user_metadata?.name,
+    typeof user?.email === "string" ? user.email.split("@")[0] : null,
+    username,
+  ];
+  for (const candidate of candidates) {
+    if (typeof candidate === "string" && candidate.trim().length > 0) {
+      return candidate.trim();
+    }
+  }
+  return "阅迹用户";
+}
 
 async function loadPrivateShellProfile() {
   const supabase = await createCookieSupabaseClient();
@@ -17,27 +33,31 @@ async function loadPrivateShellProfile() {
     redirect("/auth/sign-in");
   }
 
-  const { data, error } = await supabase
+  const profile = await ensurePrivateShellProfile(supabase, user);
+
+  const { data: profileRow } = await supabase
     .from("profiles")
-    .select("username")
-    .eq("auth_user_id", user.id)
+    .select("display_name, avatar_url")
+    .eq("username", profile.username)
     .is("deleted_at", null)
-    .order("created_at", { ascending: true })
-    .limit(1);
+    .maybeSingle();
 
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  const profile = firstUsableProfile(data);
-  if (!profile) {
-    redirect("/auth/sign-out");
-  }
-
-  return profile;
+  return {
+    username: profile.username,
+    displayName: resolveDisplayName(profileRow, user, profile.username),
+    avatarUrl: profileRow?.avatar_url ?? "",
+  };
 }
 
 export default async function PrivateLayout({ children }) {
   const profile = await loadPrivateShellProfile();
-  return <AppShell publicProfileHref={`/u/${profile.username}`}>{children}</AppShell>;
+  return (
+    <AppShell
+      publicProfileHref={`/u/${profile.username}`}
+      displayName={profile.displayName}
+      avatarUrl={profile.avatarUrl}
+    >
+      {children}
+    </AppShell>
+  );
 }

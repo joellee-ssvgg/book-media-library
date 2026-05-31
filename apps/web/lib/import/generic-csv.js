@@ -65,6 +65,22 @@ export function parseCsvRows(csvText) {
     rows.push(row);
     return rows.filter((candidate) => candidate.some((cell) => cell.trim().length > 0));
 }
+import { lookupCountryCode } from "@/lib/reading-map/country-lookup";
+
+function parseCountries(raw) {
+    if (!raw) return undefined;
+    const parts = raw.split(",").map((s) => s.trim()).filter(Boolean);
+    if (parts.length === 0) return undefined;
+    const codes = [];
+    for (const part of parts) {
+        const code = lookupCountryCode(part);
+        if (code) {
+            codes.push({ country_code: code, country_name: part });
+        }
+    }
+    return codes.length > 0 ? codes : undefined;
+}
+
 export function genericCsvToImportPayload(csvText, sourceFileName) {
     const rows = parseCsvRows(csvText);
     if (rows.length < 2) {
@@ -93,7 +109,7 @@ export function genericCsvToImportPayload(csvText, sourceFileName) {
         if ((externalSource && !externalId) || (!externalSource && externalId)) {
             throw new Error(`CSV row ${rowIndex + 2} must provide external_source and external_id together.`);
         }
-        return {
+        const item = {
             media_type: mediaType,
             canonical_title: title,
             original_title: optionalText(record.get("original_title")),
@@ -121,6 +137,11 @@ export function genericCsvToImportPayload(csvText, sourceFileName) {
                 ]
                 : [],
         };
+        const countries = parseCountries(record.get("countries") ?? record.get("country"));
+        if (countries) {
+            item.countries = countries;
+        }
+        return item;
     });
     return {
         source: "csv",

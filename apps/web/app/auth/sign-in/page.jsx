@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AuthCard } from "@/components/domain/auth-card";
 import { SignInForm } from "@/components/domain/sign-in-form";
+import { normalizeAuthNextPath } from "@/lib/supabase/auth";
 
 export const metadata = {
   title: "登录 · 阅迹",
@@ -8,7 +9,7 @@ export const metadata = {
 
 export default async function SignInPage({ searchParams }) {
   const params = await searchParams;
-  const next = typeof params?.next === "string" ? params.next : "";
+  const next = normalizeAuthNextPath(typeof params?.next === "string" ? params.next : "");
 
   return (
     <AuthCard
@@ -19,7 +20,7 @@ export default async function SignInPage({ searchParams }) {
           还没有账号？{" "}
           <Link
             href={next ? `/auth/sign-up?next=${encodeURIComponent(next)}` : "/auth/sign-up"}
-            className="text-[#2C6485] hover:underline font-medium"
+            className="font-medium text-primary hover:underline"
           >
             创建账号
           </Link>

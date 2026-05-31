@@ -32,6 +32,7 @@ function normalizeOpenLibraryCandidate(raw) {
         title,
         releaseYear: asInteger(raw.first_publish_year),
         coverUrl: coverUrl(asInteger(raw.cover_i)),
+        subjects: asStringArray(raw.subjects ?? raw.subject),
         creators: authors,
         externalIds,
         raw,

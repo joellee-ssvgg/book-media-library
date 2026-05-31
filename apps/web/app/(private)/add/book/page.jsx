@@ -1,36 +1,33 @@
+import Link from "next/link";
 import { BookAddClient } from "@/components/domain/book-add-client";
 import { searchBookCandidates } from "@/lib/books/search";
+import { SectionHeader } from "@/components/ui/section-header";
+
 function firstParam(value) {
     return Array.isArray(value) ? value[0] ?? "" : value ?? "";
 }
+
 export default async function AddBookPage({ searchParams }) {
     const params = await searchParams;
     const query = firstParam(params.q).trim();
     const { candidates, notices } = await searchBookCandidates(query);
-    return (<div className="min-h-screen bg-[#f7f5ef] text-[#1f2423]">
-      <main className="mx-auto grid min-h-screen w-full max-w-7xl content-start gap-8 px-6 py-8">
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[#d8d2c4] pb-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-[#6c675f]">
-              P0 Task 14
-            </p>
-            <h1 className="mt-1 text-2xl font-semibold">添加书籍</h1>
-          </div>
-          <a className="text-sm font-medium text-[#315f53]" href="/onboarding">
-            返回 onboarding
-          </a>
-        </header>
-
-        <section className="grid gap-3">
-          <h2 className="max-w-3xl text-3xl font-semibold leading-tight">
-            搜索 Provider，选择结果并设置你的初始阅读状态。
-          </h2>
-          <p className="max-w-3xl text-base leading-7 text-[#5f665f]">
-            提交时会重新向 Provider 拉取记录，再由数据库创建 work、默认 edition 和 user entry。
-          </p>
-        </section>
-
-        <BookAddClient candidates={candidates} notices={notices} query={query}/>
-      </main>
-    </div>);
+    return (
+      <div className="page-frame">
+        <SectionHeader
+          eyebrow="ADD BOOK"
+          title="添加书籍"
+          action={
+            <Link href="/library" className="font-ui text-sm font-medium text-primary hover:underline">
+              返回图书库
+            </Link>
+          }
+        />
+        <p className="ink-subtitle mt-3 max-w-2xl text-sm">
+          详细添加：搜索后可为每个结果单独设置初始阅读状态，再加入你的库。只想快速添加，可用顶部的搜索弹窗。
+        </p>
+        <div className="mt-8">
+          <BookAddClient candidates={candidates} notices={notices} query={query} />
+        </div>
+      </div>
+    );
 }

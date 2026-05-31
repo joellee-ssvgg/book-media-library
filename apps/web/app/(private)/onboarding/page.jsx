@@ -18,7 +18,7 @@ export default function OnboardingPage() {
 
         <section className="grid gap-3">
           <h2 className="max-w-3xl text-3xl font-semibold leading-tight">
-            完成资料设置，并导入历史书影记录。
+            完成资料设置，并导入历史阅迹记录。
           </h2>
           <p className="max-w-3xl text-base leading-7 text-[#5f665f]">
             这里会调用真实 onboarding 和导入 RPC，不使用本地占位数据。

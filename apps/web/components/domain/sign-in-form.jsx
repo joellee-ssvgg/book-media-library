@@ -58,7 +58,7 @@ export function SignInForm({ next = "", error = "" }) {
             <Label htmlFor="password">密码</Label>
             <Link
               href="/auth/forgot-password"
-              className="text-xs text-[#2C6485] hover:underline"
+              className="font-ui text-xs text-primary hover:underline"
             >
               忘记密码？
             </Link>
@@ -77,20 +77,20 @@ export function SignInForm({ next = "", error = "" }) {
 
       <div className="relative my-2">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-[#E7E8E7]" />
+          <span className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-white px-2 text-[#394A56]/60">或</span>
+          <span className="bg-card px-2 text-muted-foreground">或</span>
         </div>
       </div>
 
-      <a
+      <Link
         href={oauthHref}
-        className="inline-flex w-full h-10 items-center justify-center gap-2 rounded-md border border-input bg-background px-4 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
+        className="font-ui inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-input bg-card px-4 text-sm font-medium no-underline transition-colors hover:bg-accent hover:text-accent-foreground"
       >
         <GithubIcon className="size-4" />
         <span>用 GitHub 登录</span>
-      </a>
+      </Link>
     </div>
   );
 }

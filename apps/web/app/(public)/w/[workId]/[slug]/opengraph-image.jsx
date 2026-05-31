@@ -18,8 +18,8 @@ export default async function PublicWorkOgImage({ params }) {
     if (data.status !== "active") {
         return new ImageResponse((<div style={{
                 alignItems: "center",
-                background: "#f7f5ef",
-                color: "#1f2423",
+                background: "#f4f6f8",
+                color: "#22303f",
                 display: "flex",
                 flexDirection: "column",
                 fontFamily: "system-ui",
@@ -27,7 +27,7 @@ export default async function PublicWorkOgImage({ params }) {
                 justifyContent: "center",
                 width: "100%",
             }}>
-          <div style={{ color: "#315f53", display: "flex", fontSize: 34, marginBottom: 28 }}>
+          <div style={{ color: "#2c6485", display: "flex", fontSize: 34, marginBottom: 28 }}>
             阅迹
           </div>
           <div style={{ display: "flex", fontSize: 82, fontWeight: 700 }}>作品不可用</div>
@@ -37,8 +37,8 @@ export default async function PublicWorkOgImage({ params }) {
         ? `${(data.stats.average_rating_x10 / 10).toFixed(1)}`
         : "—";
     return new ImageResponse((<div style={{
-            background: "#f7f5ef",
-            color: "#1f2423",
+            background: "#f4f6f8",
+            color: "#22303f",
             display: "flex",
             fontFamily: "system-ui",
             height: "100%",
@@ -47,15 +47,15 @@ export default async function PublicWorkOgImage({ params }) {
         }}>
         <div style={{
             alignItems: "center",
-            background: "#efe8d8",
-            border: "2px solid #d8d2c4",
+            background: "#e7ecef",
+            border: "2px solid #d3dbe1",
             display: "flex",
             height: 500,
             justifyContent: "center",
             overflow: "hidden",
             width: 330,
         }}>
-          {data.edition?.cover_url ? (<img alt="" height="500" src={data.edition.cover_url} width="330"/>) : (<div style={{ color: "#315f53", display: "flex", fontSize: 44, fontWeight: 700 }}>
+          {data.edition?.cover_url ? (<img alt="" height="500" src={data.edition.cover_url} width="330"/>) : (<div style={{ color: "#2c6485", display: "flex", fontSize: 44, fontWeight: 700 }}>
               阅迹
             </div>)}
         </div>
@@ -68,7 +68,7 @@ export default async function PublicWorkOgImage({ params }) {
             width: 690,
         }}>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ color: "#315f53", display: "flex", fontSize: 32 }}>
+            <div style={{ color: "#2c6485", display: "flex", fontSize: 32 }}>
               {mediaLabel(data.work.media_type)}
             </div>
             <div style={{
@@ -80,49 +80,49 @@ export default async function PublicWorkOgImage({ params }) {
         }}>
               {shortText(data.work.title, 26)}
             </div>
-            {data.work.original_title ? (<div style={{ color: "#5f665f", display: "flex", fontSize: 30, marginTop: 20 }}>
+            {data.work.original_title ? (<div style={{ color: "#4d5f6e", display: "flex", fontSize: 30, marginTop: 20 }}>
                 {shortText(data.work.original_title, 34)}
               </div>) : null}
           </div>
 
           <div style={{ display: "flex" }}>
             <div style={{
-            background: "#fffdf8",
-            border: "2px solid #d8d2c4",
+            background: "#fbfcfd",
+            border: "2px solid #d3dbe1",
             display: "flex",
             flexDirection: "column",
             padding: "22px 26px",
             width: 200,
         }}>
-              <div style={{ color: "#6c675f", display: "flex", fontSize: 24 }}>公开条目</div>
+              <div style={{ color: "#6d7f8c", display: "flex", fontSize: 24 }}>公开条目</div>
               <div style={{ display: "flex", fontSize: 44, fontWeight: 700, marginTop: 8 }}>
                 {data.stats.public_entries}
               </div>
             </div>
             <div style={{
-            background: "#fffdf8",
-            border: "2px solid #d8d2c4",
+            background: "#fbfcfd",
+            border: "2px solid #d3dbe1",
             display: "flex",
             flexDirection: "column",
             marginLeft: 18,
             padding: "22px 26px",
             width: 200,
         }}>
-              <div style={{ color: "#6c675f", display: "flex", fontSize: 24 }}>短评</div>
+              <div style={{ color: "#6d7f8c", display: "flex", fontSize: 24 }}>短评</div>
               <div style={{ display: "flex", fontSize: 44, fontWeight: 700, marginTop: 8 }}>
                 {data.stats.reviewed}
               </div>
             </div>
             <div style={{
-            background: "#fffdf8",
-            border: "2px solid #d8d2c4",
+            background: "#fbfcfd",
+            border: "2px solid #d3dbe1",
             display: "flex",
             flexDirection: "column",
             marginLeft: 18,
             padding: "22px 26px",
             width: 200,
         }}>
-              <div style={{ color: "#6c675f", display: "flex", fontSize: 24 }}>均分</div>
+              <div style={{ color: "#6d7f8c", display: "flex", fontSize: 24 }}>均分</div>
               <div style={{ display: "flex", fontSize: 44, fontWeight: 700, marginTop: 8 }}>
                 {averageRating}
               </div>

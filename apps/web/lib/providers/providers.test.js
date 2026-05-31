@@ -238,6 +238,8 @@ describe("Provider Adapter", () => {
                     billingOrder: 1,
                 },
             ],
+            subjects: [],
+            genres: [],
         });
     });
 });

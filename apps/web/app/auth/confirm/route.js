@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createCookieSupabaseClient, normalizeAuthNextPath } from "@/lib/supabase/auth";
+import { createRouteSupabaseClient, normalizeAuthNextPath, requestUrl } from "@/lib/supabase/auth";
 
 const ALLOWED_TYPES = new Set([
   "signup",
@@ -11,9 +11,9 @@ const ALLOWED_TYPES = new Set([
 ]);
 
 export async function GET(request) {
-  const supabase = await createCookieSupabaseClient();
-  if ("error" in supabase) {
-    return new NextResponse(supabase.error, { status: 503 });
+  const authClient = createRouteSupabaseClient(request);
+  if ("error" in authClient) {
+    return new NextResponse(authClient.error, { status: 503 });
   }
 
   const tokenHash = request.nextUrl.searchParams.get("token_hash");
@@ -24,12 +24,13 @@ export async function GET(request) {
     return new NextResponse("邮件确认链接缺少必要参数或参数无效。", { status: 400 });
   }
 
-  const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
+  const { error } = await authClient.supabase.auth.verifyOtp({ type, token_hash: tokenHash });
   if (error) {
     return new NextResponse(error.message, { status: 502 });
   }
 
-  const response = NextResponse.redirect(new URL(next, request.nextUrl.origin));
+  const response = NextResponse.redirect(requestUrl(next, request));
+  authClient.applyToResponse(response);
   response.headers.set("Cache-Control", "private, no-store");
   return response;
 }

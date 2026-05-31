@@ -3,7 +3,10 @@ import { ArrowLeft } from "lucide-react";
 import { CreateListForm } from "@/components/domain/create-list-form";
 import { SectionHeader } from "@/components/ui/section-header";
 
-export default function NewListPage() {
+export default async function NewListPage({ searchParams }) {
+  const sp = await searchParams;
+  const defaultTitle = typeof sp?.title === "string" ? sp.title : "";
+
   return (
     <div className="mx-auto max-w-5xl px-6 py-8">
       <Link href="/lists" className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
@@ -11,7 +14,7 @@ export default function NewListPage() {
         返回清单
       </Link>
       <SectionHeader eyebrow="LISTS" title="新建清单" />
-      <CreateListForm />
+      <CreateListForm defaultTitle={defaultTitle} />
     </div>
   );
 }
