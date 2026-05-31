@@ -22,7 +22,7 @@ export async function POST(request) {
   }
 
   const body = await request.json();
-  const { provider, externalId, type } = body;
+  const { provider, externalId, type, countryCode, countryName } = body;
 
   if (!provider || !externalId || !type) {
     return Response.json({ error: "缺少参数" }, { status: 400 });
@@ -83,6 +83,15 @@ export async function POST(request) {
   const { data, error } = await supabase.rpc(rpcName, rpcArgs);
   if (error) {
     return Response.json({ error: error.message }, { status: 500 });
+  }
+
+  // Assign country if provided
+  if (data?.entry_id && countryCode) {
+    await supabase.rpc("add_book_country", {
+      input_entry_id: data.entry_id,
+      input_country_code: countryCode,
+      input_country_name: countryName || countryCode,
+    });
   }
 
   return Response.json({ ok: true, data });

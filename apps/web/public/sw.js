@@ -1,4 +1,4 @@
-const TASK20_STATIC_CACHE = "book-media-library-static-v1";
+const TASK20_STATIC_CACHE = "book-media-library-static-v2";
 const TASK20_STATIC_ASSETS = [
   "/manifest.webmanifest",
   "/pwa-icon.svg",
@@ -39,11 +39,7 @@ function isStaticRequest(request) {
     return false;
   }
 
-  return (
-    url.pathname.startsWith("/_next/static/")
-    || TASK20_STATIC_ASSETS.includes(url.pathname)
-    || /\.(?:css|js|mjs|map|svg|png|jpg|jpeg|gif|webp|ico|woff|woff2)$/.test(url.pathname)
-  );
+  return TASK20_STATIC_ASSETS.includes(url.pathname);
 }
 
 self.addEventListener("fetch", (event) => {

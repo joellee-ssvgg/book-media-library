@@ -35,6 +35,7 @@ function normalizeGoogleBooksCandidate(raw) {
         description: firstText(volumeInfo.description),
         coverUrl: firstText(imageLinks.thumbnail, imageLinks.smallThumbnail),
         language: firstText(volumeInfo.language),
+        subjects: asStringArray(volumeInfo.categories),
         creators: authors,
         externalIds: [
             {

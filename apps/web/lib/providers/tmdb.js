@@ -1,9 +1,31 @@
 import { err, ok } from "./result";
 import { asInteger, asRecord, asRecordArray, firstText, parseYear, requestJson } from "./utils";
 import { loadWorkspaceEnv } from "@/lib/workspace-env";
+import { TMDB_GENRE_TO_CANONICAL, getGenre } from "@/lib/recommendations/genres";
+
+// TMDB 详情返回 genres:[{id,name}]，搜索结果返回 genre_ids:[number]。
+function tmdbSubjects(raw) {
+    if (Array.isArray(raw?.genres)) {
+        const names = raw.genres.map((g) => (g && typeof g.name === "string" ? g.name : null)).filter(Boolean);
+        if (names.length) return names;
+    }
+    if (Array.isArray(raw?.genre_ids)) {
+        return raw.genre_ids.map((id) => getGenre(TMDB_GENRE_TO_CANONICAL[id])?.en).filter(Boolean);
+    }
+    return [];
+}
 function tmdbApiKey(environment) {
     loadWorkspaceEnv();
     return environment.tmdbApiKey ?? process.env.TMDB_API_KEY;
+}
+// TMDB v4 read access tokens are JWTs (eyJ...) and must go in an Authorization
+// Bearer header; legacy v3 keys are hex strings passed as an api_key query param.
+function tmdbAuth(url, apiKey) {
+    if (typeof apiKey === "string" && apiKey.startsWith("eyJ")) {
+        return { Authorization: `Bearer ${apiKey}` };
+    }
+    url.searchParams.set("api_key", apiKey);
+    return {};
 }
 function posterUrl(path) {
     return path ? `https://image.tmdb.org/t/p/w500${path}` : undefined;
@@ -25,6 +47,7 @@ function normalizeTmdbMovie(raw) {
         coverUrl: posterUrl(firstText(raw.poster_path)),
         language: firstText(raw.original_language),
         runtimeMinutes: asInteger(raw.runtime),
+        subjects: tmdbSubjects(raw),
         creators: [],
         externalIds: [
             {
@@ -55,12 +78,12 @@ export function createTmdbMovieProvider(environment = {}) {
             }
             const url = new URL("https://api.themoviedb.org/3/search/movie");
             url.searchParams.set("query", text);
-            url.searchParams.set("api_key", apiKey);
             url.searchParams.set("include_adult", "false");
             if (query.language) {
                 url.searchParams.set("language", query.language);
             }
-            const result = await requestJson(url, environment.fetch);
+            const authHeaders = tmdbAuth(url, apiKey);
+            const result = await requestJson(url, environment.fetch, 8000, authHeaders);
             if (!result.ok) {
                 return result;
             }
@@ -78,8 +101,8 @@ export function createTmdbMovieProvider(environment = {}) {
                 return err("invalid_query", "TMDB external id is empty.");
             }
             const url = new URL(`https://api.themoviedb.org/3/movie/${encodeURIComponent(normalizedId)}`);
-            url.searchParams.set("api_key", apiKey);
-            const result = await requestJson(url, environment.fetch);
+            const authHeaders = tmdbAuth(url, apiKey);
+            const result = await requestJson(url, environment.fetch, 8000, authHeaders);
             if (!result.ok) {
                 return result;
             }
@@ -88,6 +111,32 @@ export function createTmdbMovieProvider(environment = {}) {
                 ...candidate,
                 credits: [],
             });
+        },
+        // TMDB /movie/{id}/recommendations — "看过这部的人也喜欢"。返回带评分/热度的候选，
+        // 供推荐板块跨多个种子聚合排序。
+        async recommendations(externalId) {
+            const apiKey = tmdbApiKey(environment);
+            const normalizedId = externalId.trim();
+            if (!apiKey) {
+                return err("missing_config", "TMDB_API_KEY is required for TMDB provider.");
+            }
+            if (!normalizedId) {
+                return err("invalid_query", "TMDB external id is empty.");
+            }
+            const url = new URL(`https://api.themoviedb.org/3/movie/${encodeURIComponent(normalizedId)}/recommendations`);
+            const authHeaders = tmdbAuth(url, apiKey);
+            const result = await requestJson(url, environment.fetch, 8000, authHeaders);
+            if (!result.ok) {
+                return result;
+            }
+            const payload = asRecord(result.value);
+            const results = asRecordArray(payload?.results);
+            return ok(results.map((raw) => ({
+                ...normalizeTmdbMovie(raw),
+                voteAverage: typeof raw.vote_average === "number" ? raw.vote_average : 0,
+                popularity: typeof raw.popularity === "number" ? raw.popularity : 0,
+                adult: raw.adult === true,
+            })));
         },
     };
 }

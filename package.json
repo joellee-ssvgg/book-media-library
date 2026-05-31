@@ -23,7 +23,8 @@
     "task20:rate-limit:smoke": "pnpm tsx scripts/task20-rate-limit-smoke.ts",
     "task20:sentry:smoke": "pnpm tsx scripts/task20-sentry-smoke.ts",
     "db:migrate:smoke": "supabase db reset",
-    "db:test:rls": "supabase test db test/rls"
+    "db:test:rls": "supabase test db test/rls",
+    "db:backfill:genres": "tsx --tsconfig scripts/tsconfig.backfill.json scripts/task32-backfill-genres.ts"
   },
   "devDependencies": {
     "ts-blank-space": "^0.9.0",

@@ -1,4 +1,5 @@
 import { getRegistry } from "@/lib/registry";
+import { cleanSubjects, subjectsToGenreIds } from "@/lib/recommendations/subjects";
 const P0_PROVIDER_IDS = ["openlibrary", "googlebooks", "tmdb", "manual"];
 function isP0ProviderId(value) {
     return P0_PROVIDER_IDS.includes(value);
@@ -35,6 +36,7 @@ export function getProviderSearchOrder(query) {
     return providers;
 }
 export function canonicalizeProviderRecord(record) {
+    const rawSubjects = Array.isArray(record.subjects) ? record.subjects : [];
     return {
         work: {
             mediaType: record.mediaType,
@@ -48,5 +50,7 @@ export function canonicalizeProviderRecord(record) {
         },
         externalIds: record.externalIds,
         credits: "credits" in record ? record.credits : [],
+        subjects: cleanSubjects(rawSubjects),
+        genres: subjectsToGenreIds(rawSubjects),
     };
 }

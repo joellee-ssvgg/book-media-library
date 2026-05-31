@@ -28,27 +28,27 @@ function workHref(entry) {
     return `/w/${entry.work_id}/${slugifyTitle(entry.title)}`;
 }
 function EntryCard({ entry, featured = false }) {
-    return (<a className={`grid gap-3 border border-[#d8d2c4] bg-[#fffdf8] p-4 text-[#1f2423] ${featured ? "md:grid-cols-[92px_1fr]" : ""}`} href={workHref(entry)}>
-      {featured ? (<div className="aspect-[2/3] border border-[#d8d2c4] bg-[#efe8d8]">
+    return (<a className={`grid gap-3 border border-[var(--line)] bg-[hsl(var(--card))] p-4 text-[var(--ink)] ${featured ? "md:grid-cols-[92px_1fr]" : ""}`} href={workHref(entry)}>
+      {featured ? (<div className="aspect-[2/3] border border-[var(--line)] bg-[var(--paper-deep)]">
           {entry.cover_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img alt="" className="h-full w-full object-cover" src={entry.cover_url}/>) : null}
         </div>) : null}
       <div className="grid content-start gap-2">
-        <p className="text-xs uppercase tracking-[0.16em] text-[#6c675f]">
+        <p className="text-xs uppercase tracking-[0.16em] text-[var(--ink-faint)]">
           {mediaLabel(entry.media_type)} · {statusLabel(entry.status)}
         </p>
         <h3 className="text-lg font-semibold">{entry.title}</h3>
-        <p className="text-sm text-[#5f665f]">
+        <p className="text-sm text-[var(--ink-soft)]">
           {entry.year ?? "未知年份"} · {ratingLabel(entry.rating_x10)}
         </p>
-        {entry.review ? <p className="text-sm leading-6 text-[#3f4945]">{entry.review}</p> : null}
+        {entry.review ? <p className="text-sm leading-6 text-[var(--ink-soft)]">{entry.review}</p> : null}
       </div>
     </a>);
 }
 function StatBlock({ label, value }) {
-    return (<div className="border border-[#d8d2c4] bg-[#fffdf8] p-4">
-      <p className="text-xs uppercase tracking-[0.16em] text-[#6c675f]">{label}</p>
+    return (<div className="border border-[var(--line)] bg-[hsl(var(--card))] p-4">
+      <p className="text-xs uppercase tracking-[0.16em] text-[var(--ink-faint)]">{label}</p>
       <p className="mt-2 text-2xl font-semibold">{value}</p>
     </div>);
 }
@@ -63,10 +63,10 @@ export async function generateMetadata({ params }) {
     const name = displayName(data);
     return {
         title: `${name} · 阅迹`,
-        description: data.profile.bio ?? `${name} 的公开书影主页`,
+        description: data.profile.bio ?? `${name} 的公开阅迹主页`,
         openGraph: {
             title: `${name} · 阅迹`,
-            description: data.profile.bio ?? `${name} 的公开书影主页`,
+            description: data.profile.bio ?? `${name} 的公开阅迹主页`,
             images: [`/u/${data.profile.username}/opengraph-image`],
         },
     };
@@ -81,28 +81,28 @@ export default async function PublicProfilePage({ params }) {
     const averageRating = data.stats.average_rating_x10
         ? `${(data.stats.average_rating_x10 / 10).toFixed(1)}`
         : "—";
-    return (<div className="min-h-screen bg-[#f7f5ef] text-[#1f2423]">
+    return (<div className="min-h-screen bg-[var(--paper)] text-[var(--ink)]">
       <main className="mx-auto grid min-h-screen w-full max-w-7xl content-start gap-8 px-6 py-8">
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[#d8d2c4] pb-4">
+        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
           <div className="flex items-center gap-4">
-            <div className="grid size-16 place-items-center overflow-hidden rounded-full border border-[#d8d2c4] bg-[#e9e2d4] text-xl font-semibold text-[#315f53]">
+            <div className="grid size-16 place-items-center overflow-hidden rounded-full border border-[var(--line)] bg-[var(--paper-deep)] text-xl font-semibold text-[var(--blue)]">
               {data.profile.avatar_url ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img alt="" className="h-full w-full object-cover" src={data.profile.avatar_url}/>) : (name.slice(0, 1).toUpperCase())}
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-[#6c675f]">
+              <p className="text-xs uppercase tracking-[0.18em] text-[var(--ink-faint)]">
                 @{data.profile.username}
               </p>
               <h1 className="mt-1 text-3xl font-semibold">{name}</h1>
             </div>
           </div>
-          <Link className="text-sm font-medium text-[#315f53]" href="/">
+          <Link className="text-sm font-medium text-[var(--blue)]" href="/">
             阅迹
           </Link>
         </header>
 
-        {data.profile.bio ? (<p className="max-w-3xl text-lg leading-8 text-[#3f4945]">{data.profile.bio}</p>) : null}
+        {data.profile.bio ? (<p className="max-w-3xl text-lg leading-8 text-[var(--ink-soft)]">{data.profile.bio}</p>) : null}
 
         <section className="grid gap-3 md:grid-cols-4">
           <StatBlock label="公开条目" value={data.stats.public_entries}/>
@@ -114,13 +114,13 @@ export default async function PublicProfilePage({ params }) {
         <section className="grid gap-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-xl font-semibold">精选 Top-3</h2>
-            <p className="text-sm text-[#5f665f]">
+            <p className="text-sm text-[var(--ink-soft)]">
               {data.stats.books} 本书 · {data.stats.movies} 部电影
             </p>
           </div>
           {data.top3.length ? (<div className="grid gap-4 lg:grid-cols-3">
               {data.top3.map((entry) => (<EntryCard entry={entry} featured key={entry.entry_id}/>))}
-            </div>) : (<p className="border border-[#d8d2c4] bg-[#fffdf8] p-5 text-sm text-[#5f665f]">
+            </div>) : (<p className="border border-[var(--line)] bg-[hsl(var(--card))] p-5 text-sm text-[var(--ink-soft)]">
               暂无公开精选。
             </p>)}
         </section>
@@ -129,7 +129,7 @@ export default async function PublicProfilePage({ params }) {
           <section className="grid content-start gap-4">
             <h2 className="text-xl font-semibold">最近完成</h2>
             <div className="grid gap-3">
-              {data.recent_finished.length ? (data.recent_finished.map((entry) => (<EntryCard entry={entry} key={entry.entry_id}/>))) : (<p className="border border-[#d8d2c4] bg-[#fffdf8] p-5 text-sm text-[#5f665f]">
+              {data.recent_finished.length ? (data.recent_finished.map((entry) => (<EntryCard entry={entry} key={entry.entry_id}/>))) : (<p className="border border-[var(--line)] bg-[hsl(var(--card))] p-5 text-sm text-[var(--ink-soft)]">
                   暂无公开完成记录。
                 </p>)}
             </div>
@@ -138,7 +138,7 @@ export default async function PublicProfilePage({ params }) {
           <section className="grid content-start gap-4">
             <h2 className="text-xl font-semibold">公开短评</h2>
             <div className="grid gap-3">
-              {data.public_reviews.length ? (data.public_reviews.map((entry) => (<EntryCard entry={entry} key={entry.entry_id}/>))) : (<p className="border border-[#d8d2c4] bg-[#fffdf8] p-5 text-sm text-[#5f665f]">
+              {data.public_reviews.length ? (data.public_reviews.map((entry) => (<EntryCard entry={entry} key={entry.entry_id}/>))) : (<p className="border border-[var(--line)] bg-[hsl(var(--card))] p-5 text-sm text-[var(--ink-soft)]">
                   暂无公开短评。
                 </p>)}
             </div>

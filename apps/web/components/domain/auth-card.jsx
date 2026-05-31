@@ -2,24 +2,25 @@ import Link from "next/link";
 
 export function AuthCard({ title, subtitle, children, footer }) {
   return (
-    <div className="min-h-screen bg-[#F7F8F7] flex flex-col items-center justify-center px-4 py-12">
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background px-4 py-12">
+      <div className="ink-wash left-0 top-28 h-80 w-[34rem]" aria-hidden="true" />
       <Link
         href="/"
-        className="mb-6 text-lg font-semibold text-[#22303F] tracking-tight"
+        className="font-display z-10 mb-8 text-4xl font-bold text-[var(--ink)] no-underline"
       >
         阅迹
       </Link>
-      <div className="w-full max-w-sm rounded-xl border border-[#E7E8E7] bg-white p-8 shadow-sm">
+      <div className="ink-card z-10 w-full max-w-md p-8">
         <div className="mb-6 text-center">
-          <h1 className="text-xl font-semibold text-[#22303F]">{title}</h1>
+          <h1 className="font-display text-3xl font-semibold text-[var(--ink)]">{title}</h1>
           {subtitle ? (
-            <p className="mt-2 text-sm text-[#394A56]/70">{subtitle}</p>
+            <p className="ink-subtitle mt-2 text-sm">{subtitle}</p>
           ) : null}
         </div>
         {children}
       </div>
       {footer ? (
-        <div className="mt-6 text-sm text-[#394A56]/70">{footer}</div>
+        <div className="z-10 mt-6 font-ui text-sm text-muted-foreground">{footer}</div>
       ) : null}
     </div>
   );

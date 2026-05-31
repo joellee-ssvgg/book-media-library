@@ -70,3 +70,32 @@ export async function createActionSupabase(accessToken) {
 export function createAnonymousSupabase() {
     return createRpcClient();
 }
+// Server-only. Bypasses RLS — never expose to the client. Used to drain the
+// task13 job queue (process_task13_due_jobs is granted to service_role only).
+export function createServiceRoleSupabase() {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!supabaseUrl || !serviceKey) {
+        return {
+            error: "SUPABASE_SERVICE_ROLE_KEY 未配置，无法在后台处理导入任务。",
+        };
+    }
+    const client = createClient(supabaseUrl, serviceKey, {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false,
+            detectSessionInUrl: false,
+        },
+    });
+    return {
+        client: {
+            async rpc(fn, args) {
+                const result = await client.rpc(fn, args);
+                return {
+                    data: result.data,
+                    error: result.error,
+                };
+            },
+        },
+    };
+}

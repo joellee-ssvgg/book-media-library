@@ -19,7 +19,7 @@ export default async function SignUpPage({ searchParams }) {
           已有账号？{" "}
           <Link
             href={next ? `/auth/sign-in?next=${encodeURIComponent(next)}` : "/auth/sign-in"}
-            className="text-[#2C6485] hover:underline font-medium"
+            className="font-medium text-primary hover:underline"
           >
             登录
           </Link>

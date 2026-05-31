@@ -18,10 +18,17 @@ vi.mock("@supabase/ssr", () => ({
   }),
 }));
 
-function signInRequest(body) {
-  return new Request("https://example.com/auth/password/sign-in", {
+function signInRequest(body, options = {}) {
+  const headers = new Headers({
+    "Content-Type": "application/x-www-form-urlencoded",
+  });
+  if (options.host) {
+    headers.set("host", options.host);
+  }
+
+  return new Request(options.url ?? "https://example.com/auth/password/sign-in", {
     body: new URLSearchParams(body),
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    headers,
     method: "POST",
   });
 }
@@ -46,6 +53,27 @@ describe("password sign-in route", () => {
     expect(response.status).toBe(303);
     expect(response.headers.get("location")).toBe("https://example.com/dashboard");
     expect(response.headers.get("set-cookie")).toContain("sb-test-auth-token=test-session");
+  });
+
+  it("keeps the incoming host in redirects so auth cookies stay on the same origin", async () => {
+    const { POST } = await import("./route");
+
+    const response = await POST(
+      signInRequest(
+        {
+          email: "reader@example.com",
+          password: "correct-password",
+          next: "/dashboard",
+        },
+        {
+          host: "127.0.0.1:3000",
+          url: "http://localhost:3000/auth/password/sign-in",
+        },
+      ),
+    );
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe("http://127.0.0.1:3000/dashboard");
   });
 
   it("redirects invalid form posts with 303 back to sign-in", async () => {

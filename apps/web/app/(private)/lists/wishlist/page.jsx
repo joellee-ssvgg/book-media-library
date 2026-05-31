@@ -1,44 +1,68 @@
-"use client";
-
-import { useState } from "react";
 import { SectionHeader } from "@/components/ui/section-header";
-import { EmptyState } from "@/components/ui/empty-state";
-import { Heart } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { WishlistClient } from "./wishlist-client";
+import { createCookieSupabaseClient } from "@/lib/supabase/auth";
 
-export default function WishlistPage() {
-  const [filter, setFilter] = useState("all");
+const WANT_STATUSES = ["want_to_read", "want_to_watch"];
+
+function mapRow(row) {
+  const meta = row.works?.metadata_json ?? {};
+  return {
+    entryId: row.id,
+    workId: row.works?.id ?? null,
+    status: row.status,
+    title: row.works?.canonical_title ?? "未命名作品",
+    mediaType: row.works?.media_type ?? "book",
+    year: row.works?.first_release_year ?? null,
+    coverUrl: row.editions?.cover_url ?? "",
+    genres: Array.isArray(meta.genres) ? meta.genres : [],
+    subjects: Array.isArray(meta.subjects) ? meta.subjects : [],
+  };
+}
+
+// 一次拉全部条目：想读想看用于骰子；全部（去重 workId）作为「更像这本」的语料库。
+async function loadWishlistData() {
+  const supabase = await createCookieSupabaseClient();
+  if ("error" in supabase) {
+    return { items: [], corpus: [] };
+  }
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { items: [], corpus: [] };
+  }
+
+  const { data } = await supabase
+    .from("user_entries")
+    .select("id, status, works(id, canonical_title, media_type, first_release_year, metadata_json), editions(cover_url)")
+    .is("deleted_at", null)
+    .order("updated_at", { ascending: false })
+    .limit(500);
+
+  const rows = (data ?? []).map(mapRow).filter((r) => r.workId);
+  const items = rows.filter((r) => WANT_STATUSES.includes(r.status));
+
+  const seen = new Set();
+  const corpus = [];
+  for (const r of rows) {
+    if (seen.has(r.workId)) continue;
+    seen.add(r.workId);
+    corpus.push(r);
+  }
+
+  return { items, corpus };
+}
+
+export default async function WishlistPage() {
+  const { items, corpus } = await loadWishlistData();
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-8">
+    <div className="page-frame">
       <SectionHeader eyebrow="LISTS" title="想读想看" />
-
-      <div className="mt-6 flex gap-1 rounded-md bg-muted p-1 w-fit">
-        {[
-          { key: "all", label: "全部" },
-          { key: "book", label: "图书" },
-          { key: "movie", label: "影视" },
-        ].map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setFilter(t.key)}
-            className={cn(
-              "rounded-sm px-4 py-1.5 text-sm font-medium transition-colors",
-              filter === t.key ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-8">
-        <EmptyState
-          icon={Heart}
-          title="还没有想读或想看的内容"
-          description="在搜索结果中点击「加入想读 / 想看」即可保存。"
-        />
-      </div>
+      <p className="ink-subtitle mt-2 mb-6 text-sm">
+        把想读的书和想看的影视放在一起。不知道下一个看什么时，让骰子替你决定。
+      </p>
+      <WishlistClient items={items} corpus={corpus} />
     </div>
   );
 }

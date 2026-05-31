@@ -56,7 +56,7 @@ export function firstText(...values) {
     }
     return undefined;
 }
-export async function requestJson(url, fetchImpl, timeoutMs = 8000) {
+export async function requestJson(url, fetchImpl, timeoutMs = 8000, extraHeaders = {}) {
     const resolvedFetch = fetchImpl ?? globalThis.fetch;
     if (!resolvedFetch) {
         return err("missing_config", "fetch is not available in this runtime.");
@@ -68,6 +68,7 @@ export async function requestJson(url, fetchImpl, timeoutMs = 8000) {
             headers: {
                 Accept: "application/json",
                 "User-Agent": "BookMediaLibrary/0.1.0",
+                ...extraHeaders,
             },
             signal: controller.signal,
         });

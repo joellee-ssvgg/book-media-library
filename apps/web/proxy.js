@@ -183,9 +183,34 @@ async function task20RateLimitResponse(request) {
         status: 429,
     });
 }
+function allAccessTokenCandidates(request) {
+    const tokens = [];
+    const authorization = request.headers.get("authorization");
+    if (authorization?.toLowerCase().startsWith("bearer ")) {
+        const headerToken = maybeJwt(authorization.slice("bearer ".length));
+        if (headerToken) {
+            tokens.push(headerToken);
+        }
+    }
+    const cookies = request.cookies.getAll();
+    const baseNames = new Set();
+    for (const cookie of cookies) {
+        const baseName = supabaseAuthCookieBaseName(cookie.name);
+        if (baseName) {
+            baseNames.add(baseName);
+        }
+    }
+    for (const baseName of baseNames) {
+        const token = tokenFromCookieValue(combinedCookieValue(cookies, baseName));
+        if (token) {
+            tokens.push(token);
+        }
+    }
+    return tokens;
+}
 async function hasValidSupabaseSession(request) {
-    const accessToken = extractAccessToken(request);
-    if (!accessToken) {
+    const tokens = allAccessTokenCandidates(request);
+    if (tokens.length === 0) {
         return false;
     }
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -193,13 +218,20 @@ async function hasValidSupabaseSession(request) {
     if (!anonKey || !userUrl) {
         return false;
     }
-    const response = await fetch(userUrl, {
-        headers: {
-            apikey: anonKey,
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
-    return response.ok;
+    // Validate every candidate: a stale auth cookie from another Supabase
+    // project (e.g. after switching backends) must not block a valid session.
+    for (const token of tokens) {
+        const response = await fetch(userUrl, {
+            headers: {
+                apikey: anonKey,
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (response.ok) {
+            return true;
+        }
+    }
+    return false;
 }
 export async function proxy(request) {
     const limited = await task20RateLimitResponse(request);
@@ -207,13 +239,9 @@ export async function proxy(request) {
         return limited;
     }
     const pathname = request.nextUrl.pathname;
-    const hasToken = pathname === "/" || privatePathPattern.test(pathname)
+    const hasToken = privatePathPattern.test(pathname)
         ? await hasValidSupabaseSession(request)
         : false;
-    if (pathname === "/") {
-        const dest = hasToken ? "/dashboard" : "/auth/sign-in";
-        return NextResponse.redirect(new URL(dest, request.url));
-    }
     if (privatePathPattern.test(pathname) && !hasToken) {
         const signIn = new URL("/auth/sign-in", request.url);
         signIn.searchParams.set("next", pathname);

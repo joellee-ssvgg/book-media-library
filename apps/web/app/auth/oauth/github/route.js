@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
-import { createCookieSupabaseClient, normalizeAuthNextPath } from "@/lib/supabase/auth";
+import { createRouteSupabaseClient, normalizeAuthNextPath, requestUrl } from "@/lib/supabase/auth";
 export async function GET(request) {
-    const supabase = await createCookieSupabaseClient();
-    if ("error" in supabase) {
-        return new NextResponse(supabase.error, { status: 503 });
+    const authClient = createRouteSupabaseClient(request);
+    if ("error" in authClient) {
+        return new NextResponse(authClient.error, { status: 503 });
     }
-    const origin = request.nextUrl.origin;
     const next = normalizeAuthNextPath(request.nextUrl.searchParams.get("next"));
-    const redirectTo = new URL("/auth/callback", origin);
+    const redirectTo = requestUrl("/auth/callback", request);
     redirectTo.searchParams.set("next", next);
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await authClient.supabase.auth.signInWithOAuth({
         provider: "github",
         options: {
             redirectTo: redirectTo.toString(),
@@ -20,5 +19,8 @@ export async function GET(request) {
             status: 502,
         });
     }
-    return NextResponse.redirect(data.url);
+    const response = NextResponse.redirect(data.url);
+    authClient.applyToResponse(response);
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
 }

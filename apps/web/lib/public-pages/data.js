@@ -15,6 +15,15 @@ export async function getPublicProfile(username) {
     }
     return data ?? { status: "not_found" };
 }
+export async function getPublicList(listId) {
+    const { data, error } = await anonymousClient().rpc("task34_get_public_list", {
+        input_list_id: listId,
+    });
+    if (error) {
+        throw new Error(error.message);
+    }
+    return data ?? { status: "not_found" };
+}
 export async function getPublicWork(workId, slug) {
     const { data, error } = await anonymousClient().rpc("task17_get_public_work", {
         input_work_id: workId,

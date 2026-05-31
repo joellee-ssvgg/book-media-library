@@ -68,6 +68,13 @@ export async function addMovieEntryAction(_previousState, formData) {
             message: "task15_create_movie_entry_from_provider 没有返回结果。",
         };
     }
+    if (data.work_id && ((draft.subjects?.length ?? 0) > 0 || (draft.genres?.length ?? 0) > 0)) {
+        await supabase.client.rpc("task32_enrich_work_metadata", {
+            input_work_id: data.work_id,
+            input_subjects: draft.subjects ?? [],
+            input_genres: draft.genres ?? [],
+        });
+    }
     return {
         status: "created",
         message: data.status === "created" ? "电影条目已添加。" : "这个作品已经在你的库里。",

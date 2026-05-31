@@ -20,7 +20,8 @@ describe("Task20 PWA assets", () => {
         const sw = readFileSync(join(publicDir, "sw.js"), "utf8");
         expect(sw).toContain("TASK20_STATIC_ASSETS");
         expect(sw).toContain("/manifest.webmanifest");
-        expect(sw).toContain("/_next/static/");
+        expect(sw).not.toContain("/_next/static/");
+        expect(sw).not.toContain("css|js");
         expect(sw).not.toContain('"/"');
         expect(sw).not.toContain("request.mode === \"navigate\"");
     });
