@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Plus, Film, X, Loader2 } from "lucide-react";
 import { loadWatchMonth, removeWatchEvent, loadWatchStats } from "@/actions/watch-events";
 import { LogWatchModal } from "./log-watch-modal";
+import { CoverImage } from "@/components/domain/cover-image";
 import { cn } from "@/lib/utils";
 
 const WEEKDAYS = ["一", "二", "三", "四", "五", "六", "日"];
@@ -29,8 +30,7 @@ function PosterCell({ event, count }) {
       {/* 格子内：方形缩略（会裁切，仅占位） */}
       <span className="absolute inset-1 overflow-hidden rounded-lg shadow-sm">
         {event.coverUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={event.coverUrl} alt={event.title} className="h-full w-full object-cover" loading="lazy" />
+          <CoverImage as="span" src={event.coverUrl} alt={event.title} sizes="90px" className="h-full w-full" />
         ) : (
           <span className="grid h-full w-full place-items-center bg-[var(--paper-deep)] p-1 text-center">
             <span className="line-clamp-3 font-display text-[10px] font-semibold leading-tight text-[var(--ink)]">{event.title}</span>
@@ -46,8 +46,7 @@ function PosterCell({ event, count }) {
       {/* 悬停：浮出完整不裁切的 2:3 海报 */}
       <span className="pointer-events-none absolute left-1/2 top-1/2 z-40 w-[150%] -translate-x-1/2 -translate-y-1/2 scale-90 overflow-hidden rounded-lg opacity-0 shadow-2xl ring-1 ring-[var(--ink)]/10 transition-all duration-200 ease-out group-hover:scale-100 group-hover:opacity-100">
         {event.coverUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={event.coverUrl} alt={event.title} className="block aspect-[2/3] w-full object-cover" loading="lazy" />
+          <CoverImage as="span" src={event.coverUrl} alt={event.title} sizes="160px" className="aspect-[2/3] w-full" />
         ) : (
           <span className="grid aspect-[2/3] w-full place-items-center bg-[var(--paper-deep)] p-2 text-center">
             <span className="font-display text-xs font-semibold leading-tight text-[var(--ink)]">{event.title}</span>
@@ -249,8 +248,7 @@ export function MovieCalendar() {
             {data.events.map((ev) => (
               <li key={ev.id} className="flex items-center gap-3">
                 {ev.coverUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={ev.coverUrl} alt="" className="h-12 w-8 shrink-0 rounded-sm object-cover" />
+                  <CoverImage src={ev.coverUrl} sizes="32px" className="h-12 w-8 shrink-0 rounded-sm" />
                 ) : (
                   <span className="grid h-12 w-8 shrink-0 place-items-center rounded-sm bg-muted text-muted-foreground">
                     <Film className="size-4" />

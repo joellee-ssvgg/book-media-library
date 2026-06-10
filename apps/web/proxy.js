@@ -1,29 +1,17 @@
 import { NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 import { captureTask20OperationalAlert } from "@/lib/observability/sentry";
-import { shouldApplyTask20RateLimit } from "@/lib/rate-limit/config";
+import { ipRateLimitForPath, shouldApplyTask20RateLimit } from "@/lib/rate-limit/config";
 import { evaluateTask20RateLimit } from "@/lib/rate-limit/store";
 import { createUpstashRateLimitStore } from "@/lib/rate-limit/upstash";
 const publicProfilePattern = /^\/u\/([^/]+)$/;
-const privatePathPattern = /^\/(dashboard|library|lists|settings|add)(\/|$)/;
-function supabaseRestRpcUrl(functionName) {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    if (!supabaseUrl) {
-        return null;
-    }
-    return `${supabaseUrl.replace(/\/$/, "")}/rest/v1/rpc/${functionName}`;
-}
-function supabaseAuthUserUrl() {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    if (!supabaseUrl) {
-        return null;
-    }
-    return `${supabaseUrl.replace(/\/$/, "")}/auth/v1/user`;
-}
+const privatePathPattern = /^\/(dashboard|library|lists|settings|add|maps|onboarding)(\/|$)/;
 function supabasePublicProfileRpcUrl() {
-    return supabaseRestRpcUrl("task17_public_profile_state");
-}
-function supabaseTask20ProfileRpcUrl() {
-    return supabaseRestRpcUrl("task20_current_profile_id");
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (!supabaseUrl) {
+        return null;
+    }
+    return `${supabaseUrl.replace(/\/$/, "")}/rest/v1/rpc/task17_public_profile_state`;
 }
 function getClientIp(request) {
     const forwardedFor = request.headers.get("x-forwarded-for") ?? request.headers.get("x-vercel-forwarded-for");
@@ -32,142 +20,75 @@ function getClientIp(request) {
     }
     return request.headers.get("x-real-ip") ?? "127.0.0.1";
 }
-function maybeJwt(value) {
-    const token = value?.trim();
-    if (!token || !token.startsWith("eyJ")) {
-        return null;
-    }
-    return token;
+export function isPrivatePath(pathname) {
+    return privatePathPattern.test(pathname);
 }
-function decodeBase64CookieValue(value) {
-    if (!value.startsWith("base64-")) {
-        return value;
-    }
-    const encoded = value.slice("base64-".length);
-    const normalized = encoded.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
-    return atob(padded);
+export function hasSupabaseAuthCookie(cookies) {
+    return cookies.some(({ name }) => name.startsWith("sb-") && name.includes("-auth-token"));
 }
-export function tokenFromCookieValue(value) {
-    if (!value) {
-        return null;
-    }
-    let rawValue;
-    try {
-        rawValue = decodeBase64CookieValue(decodeURIComponent(value));
-    }
-    catch {
-        return null;
-    }
-    const directToken = maybeJwt(rawValue);
-    if (directToken) {
-        return directToken;
-    }
-    try {
-        const parsed = JSON.parse(rawValue);
-        if (Array.isArray(parsed)) {
-            return maybeJwt(String(parsed[0] ?? ""));
-        }
-        if (parsed && typeof parsed === "object" && "access_token" in parsed) {
-            return maybeJwt(String(parsed.access_token ?? ""));
-        }
-    }
-    catch {
-        return null;
-    }
-    return null;
-}
-function supabaseAuthCookieBaseName(name) {
-    if (name === "sb-access-token" || name === "supabase-auth-token") {
-        return name;
-    }
-    if (!name.startsWith("sb-") || !name.includes("-auth-token")) {
-        return null;
-    }
-    return name.replace(/[.](0|[1-9][0-9]*)$/, "");
-}
-function combinedCookieValue(cookies, baseName) {
-    const direct = cookies.find((cookie) => cookie.name === baseName);
-    if (direct?.value) {
-        return direct.value;
-    }
-    const chunks = [];
-    for (let index = 0;; index += 1) {
-        const chunk = cookies.find((cookie) => cookie.name === `${baseName}.${index}`);
-        if (!chunk?.value) {
-            break;
-        }
-        chunks.push(chunk.value);
-    }
-    return chunks.length > 0 ? chunks.join("") : null;
-}
-export function accessTokenFromCookies(cookies) {
-    const baseNames = new Set();
-    for (const cookie of cookies) {
-        const baseName = supabaseAuthCookieBaseName(cookie.name);
-        if (baseName) {
-            baseNames.add(baseName);
-        }
-    }
-    for (const baseName of baseNames) {
-        const token = tokenFromCookieValue(combinedCookieValue(cookies, baseName));
-        if (token) {
-            return token;
-        }
-    }
-    return null;
-}
-export function extractAccessToken(request) {
-    const authorization = request.headers.get("authorization");
-    if (authorization?.toLowerCase().startsWith("bearer ")) {
-        return maybeJwt(authorization.slice("bearer ".length));
-    }
-    return accessTokenFromCookies(request.cookies.getAll());
-}
-async function resolveTask20ProfileId(request) {
-    const accessToken = extractAccessToken(request);
-    if (!accessToken) {
-        return null;
-    }
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    const rpcUrl = supabaseTask20ProfileRpcUrl();
-    if (!anonKey || !rpcUrl) {
-        throw new Error("Supabase public config is missing for Task20 profile rate limit");
-    }
-    const response = await fetch(rpcUrl, {
-        body: "{}",
-        headers: {
-            apikey: anonKey,
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-        },
-        method: "POST",
+export function withSessionCookies(target, source) {
+    source.cookies.getAll().forEach((cookie) => {
+        target.cookies.set(cookie);
     });
-    if (!response.ok) {
-        throw new Error(`Task20 profile lookup failed with ${response.status}`);
-    }
-    const profileId = (await response.json());
-    return typeof profileId === "string" && profileId.trim() ? profileId : null;
+    return target;
 }
-async function task20RateLimitResponse(request) {
-    if (!shouldApplyTask20RateLimit(request.nextUrl.pathname)) {
-        return null;
+// Resolves the Supabase session once per request. getClaims() verifies the JWT
+// locally via the project JWKS when asymmetric signing keys are in use, and
+// refreshes an expired access token with the refresh token. Refreshed cookies
+// are forwarded to the downstream render (NextResponse.next({ request })) and
+// set on the response so the browser persists them.
+async function resolveSession(request) {
+    let response = NextResponse.next({ request });
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !anonKey || !hasSupabaseAuthCookie(request.cookies.getAll())) {
+        return { userId: null, response };
     }
-    let profileId = null;
+    const supabase = createServerClient(url, anonKey, {
+        auth: {
+            flowType: "pkce",
+        },
+        cookies: {
+            getAll() {
+                return request.cookies.getAll();
+            },
+            setAll(cookiesToSet) {
+                cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+                response = NextResponse.next({ request });
+                cookiesToSet.forEach(({ name, value, options }) => {
+                    response.cookies.set(name, value, {
+                        ...options,
+                        path: options?.path ?? "/",
+                    });
+                });
+            },
+        },
+    });
     try {
-        profileId = await resolveTask20ProfileId(request);
+        const { data, error } = await supabase.auth.getClaims();
+        if (error) {
+            return { userId: null, response };
+        }
+        return { userId: data?.claims?.sub ?? null, response };
     }
     catch (error) {
         await captureTask20OperationalAlert({
-            code: "task20_profile_resolve_error",
-            message: error instanceof Error ? error.message : "Task20 profile lookup failed",
+            code: "proxy_session_resolve_error",
+            message: error instanceof Error ? error.message : "Proxy session resolution failed",
         }).catch(() => undefined);
+        return { userId: null, response };
+    }
+}
+async function task20RateLimitResponse(request, userId) {
+    if (!shouldApplyTask20RateLimit(request.nextUrl.pathname)) {
+        return null;
     }
     const decision = await evaluateTask20RateLimit({
         ip: getClientIp(request),
-        profileId,
+        profileId: userId,
         store: createUpstashRateLimitStore(),
         alert: (alert) => captureTask20OperationalAlert(alert).then(() => undefined),
+        ipRule: ipRateLimitForPath(request.nextUrl.pathname),
     });
     if (decision.allowed) {
         return null;
@@ -183,80 +104,28 @@ async function task20RateLimitResponse(request) {
         status: 429,
     });
 }
-function allAccessTokenCandidates(request) {
-    const tokens = [];
-    const authorization = request.headers.get("authorization");
-    if (authorization?.toLowerCase().startsWith("bearer ")) {
-        const headerToken = maybeJwt(authorization.slice("bearer ".length));
-        if (headerToken) {
-            tokens.push(headerToken);
-        }
-    }
-    const cookies = request.cookies.getAll();
-    const baseNames = new Set();
-    for (const cookie of cookies) {
-        const baseName = supabaseAuthCookieBaseName(cookie.name);
-        if (baseName) {
-            baseNames.add(baseName);
-        }
-    }
-    for (const baseName of baseNames) {
-        const token = tokenFromCookieValue(combinedCookieValue(cookies, baseName));
-        if (token) {
-            tokens.push(token);
-        }
-    }
-    return tokens;
-}
-async function hasValidSupabaseSession(request) {
-    const tokens = allAccessTokenCandidates(request);
-    if (tokens.length === 0) {
-        return false;
-    }
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    const userUrl = supabaseAuthUserUrl();
-    if (!anonKey || !userUrl) {
-        return false;
-    }
-    // Validate every candidate: a stale auth cookie from another Supabase
-    // project (e.g. after switching backends) must not block a valid session.
-    for (const token of tokens) {
-        const response = await fetch(userUrl, {
-            headers: {
-                apikey: anonKey,
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        if (response.ok) {
-            return true;
-        }
-    }
-    return false;
-}
 export async function proxy(request) {
-    const limited = await task20RateLimitResponse(request);
+    const { userId, response } = await resolveSession(request);
+    const limited = await task20RateLimitResponse(request, userId);
     if (limited) {
-        return limited;
+        return withSessionCookies(limited, response);
     }
     const pathname = request.nextUrl.pathname;
-    const hasToken = privatePathPattern.test(pathname)
-        ? await hasValidSupabaseSession(request)
-        : false;
-    if (privatePathPattern.test(pathname) && !hasToken) {
+    if (isPrivatePath(pathname) && !userId) {
         const signIn = new URL("/auth/sign-in", request.url);
         signIn.searchParams.set("next", pathname);
-        return NextResponse.redirect(signIn);
+        return withSessionCookies(NextResponse.redirect(signIn), response);
     }
     const match = pathname.match(publicProfilePattern);
     if (!match) {
-        return NextResponse.next();
+        return response;
     }
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     const rpcUrl = supabasePublicProfileRpcUrl();
     if (!anonKey || !rpcUrl) {
-        return new NextResponse("Supabase public config is missing", { status: 503 });
+        return withSessionCookies(new NextResponse("Supabase public config is missing", { status: 503 }), response);
     }
-    const response = await fetch(rpcUrl, {
+    const profileResponse = await fetch(rpcUrl, {
         body: JSON.stringify({ input_username: decodeURIComponent(match[1]) }),
         headers: {
             apikey: anonKey,
@@ -265,19 +134,19 @@ export async function proxy(request) {
         },
         method: "POST",
     });
-    if (!response.ok) {
-        return new NextResponse("Public profile lookup failed", { status: 503 });
+    if (!profileResponse.ok) {
+        return withSessionCookies(new NextResponse("Public profile lookup failed", { status: 503 }), response);
     }
-    const data = (await response.json());
+    const data = (await profileResponse.json());
     if (data.status === "gone") {
-        return new NextResponse("Gone", {
+        return withSessionCookies(new NextResponse("Gone", {
             headers: {
                 "Content-Type": "text/plain; charset=utf-8",
             },
             status: 410,
-        });
+        }), response);
     }
-    return NextResponse.next();
+    return response;
 }
 export const config = {
     matcher: ["/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|sw.js|pwa-icon.svg).*)"],

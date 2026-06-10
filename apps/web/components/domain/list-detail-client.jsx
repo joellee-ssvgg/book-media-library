@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { CoverImage } from "@/components/domain/cover-image";
 import {
   ArrowLeft,
   Globe,
@@ -29,10 +30,11 @@ function isPublicVis(v) {
 function Cover({ item, index }) {
   if (item.coverUrl) {
     return (
-      <div className="aspect-[2/3] w-full overflow-hidden rounded-md border border-border bg-muted shadow-sm">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={item.coverUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
-      </div>
+      <CoverImage
+        src={item.coverUrl}
+        sizes="(max-width: 768px) 45vw, 220px"
+        className="aspect-[2/3] w-full rounded-md border border-border bg-muted shadow-sm"
+      />
     );
   }
   return <BookCover title={item.title} variant={COVER_VARIANTS[index % COVER_VARIANTS.length]} className="aspect-[2/3] w-full" />;

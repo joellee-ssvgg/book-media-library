@@ -106,7 +106,7 @@ export default async function PublicSettingsPage() {
             <span className="media-tab media-tab-active">公开主页</span>
             <span className="media-tab">个人资料</span>
             <span className="media-tab">隐私</span>
-            <span className="media-tab">数据导出</span>
+            <Link className="media-tab" href="/settings/data/export">账号与数据</Link>
           </nav>
 
           <PublicProfileSettingsForm

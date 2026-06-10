@@ -5,6 +5,7 @@ import { OfflineSubmitButton } from "@/components/domain/offline-submit-button";
 import { initialAddMovieEntryActionState } from "@/schemas/movie-add";
 import { Input } from "@/components/ui/input";
 import { BookCover } from "@/components/domain/visual-system";
+import { CoverImage } from "@/components/domain/cover-image";
 import { Search, Check } from "lucide-react";
 
 const SELECT_CLASS =
@@ -34,8 +35,7 @@ function CandidateForm({ candidate }) {
         <div className="flex gap-4">
           <div className="aspect-[2/3] w-20 shrink-0 overflow-hidden rounded-sm border border-border bg-muted shadow-sm">
             {candidate.coverUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img alt="" className="h-full w-full object-cover" src={candidate.coverUrl} />
+              <CoverImage src={candidate.coverUrl} sizes="80px" className="h-full w-full" />
             ) : (
               <BookCover title={candidate.title} variant="blue" className="h-full w-full" />
             )}

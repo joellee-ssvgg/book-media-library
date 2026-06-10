@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { CoverImage } from "@/components/domain/cover-image";
 import { PublicTopbar } from "@/components/layout/public-topbar";
 import { privateNavItems } from "@/lib/navigation";
 
@@ -8,8 +9,7 @@ export function ProfileAvatar({ initial = "J", src, alt = "", className }) {
   return (
     <div className={cn("avatar-seal", src && "overflow-hidden", className)}>
       {src ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt={alt} className="size-full rounded-full object-cover" />
+        <CoverImage src={src} alt={alt} sizes="80px" className="size-full rounded-full" />
       ) : (
         initial
       )}

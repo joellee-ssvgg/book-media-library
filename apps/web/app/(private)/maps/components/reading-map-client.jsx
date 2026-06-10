@@ -20,7 +20,7 @@ export function ReadingMapClient() {
   useEffect(() => {
     const form = new FormData();
     startTransition(() => formAction(form));
-  }, []);
+  }, [formAction]);
 
   const { entries, country_counts } = state.data;
   const hasData = entries?.length > 0;

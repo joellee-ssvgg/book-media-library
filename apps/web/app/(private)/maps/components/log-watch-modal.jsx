@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Check, Loader2, Film } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { loadLibraryMovies, logWatch } from "@/actions/watch-events";
+import { CoverImage } from "@/components/domain/cover-image";
 import { cn } from "@/lib/utils";
 
 function todayStr() {
@@ -104,8 +105,7 @@ function LogWatchForm({ defaultDate, onClose, onLogged }) {
                 )}
               >
                 {m.coverUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={m.coverUrl} alt="" className="h-12 w-8 shrink-0 rounded-sm object-cover" />
+                  <CoverImage as="span" src={m.coverUrl} sizes="32px" className="h-12 w-8 shrink-0 rounded-sm" />
                 ) : (
                   <span className="grid h-12 w-8 shrink-0 place-items-center rounded-sm bg-muted text-muted-foreground">
                     <Film className="size-4" />

@@ -1,5 +1,4 @@
 "use server";
-import { createActionSupabase } from "@/lib/supabase/server";
 import { loadReadingMapFormSchema } from "@/schemas/reading-map";
 import { getReadingMapData } from "@/lib/reading-map/data";
 import { addBookCountry, removeBookCountry } from "@/lib/reading-map/country-manager";

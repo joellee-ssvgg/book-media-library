@@ -11,10 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Search, X, Plus, Loader2, BookOpen } from "lucide-react";
 import { lookupCountryCode } from "@/lib/reading-map/country-lookup";
 import { addBookCountryAction, removeBookCountryAction } from "@/actions/reading-map";
+import { CoverImage } from "@/components/domain/cover-image";
 import { CountryPicker } from "@/components/domain/country-picker";
 import { useRouter } from "next/navigation";
 
-function EntryRow({ entry, pendingEntry, onAddCountry, onRemoveCountry, actionPending }) {
+function EntryRow({ entry, onAddCountry, onRemoveCountry, actionPending }) {
   const [selectedCountry, setSelectedCountry] = useState("");
   const isPending = actionPending === entry.entry_id;
 
@@ -22,10 +23,11 @@ function EntryRow({ entry, pendingEntry, onAddCountry, onRemoveCountry, actionPe
     <div className="flex items-center gap-3 rounded-md border border-border bg-[var(--paper-deep)] px-3 py-2">
       {/* Cover */}
       {entry.cover_url ? (
-        <div className="size-10 shrink-0 overflow-hidden rounded-sm border border-border bg-muted shadow-sm">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={entry.cover_url} alt="" className="h-full w-full object-cover" />
-        </div>
+        <CoverImage
+          src={entry.cover_url}
+          sizes="40px"
+          className="size-10 shrink-0 rounded-sm border border-border bg-muted shadow-sm"
+        />
       ) : (
         <div className="grid size-10 shrink-0 place-items-center rounded-sm border border-border bg-muted text-[var(--ink-faint)]">
           <BookOpen className="size-5" strokeWidth={1.5} />

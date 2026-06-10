@@ -57,11 +57,11 @@ async function checkRule({ identifier, now, rule, store, alert, }) {
         };
     }
 }
-export async function evaluateTask20RateLimit({ ip, profileId, now = new Date(), store, alert, }) {
+export async function evaluateTask20RateLimit({ ip, profileId, now = new Date(), store, alert, ipRule = task20IpRateLimit, }) {
     const ipDecision = await checkRule({
         identifier: ip,
         now,
-        rule: task20IpRateLimit,
+        rule: ipRule,
         store,
         alert,
     });

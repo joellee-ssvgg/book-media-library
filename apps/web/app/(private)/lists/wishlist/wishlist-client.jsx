@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Dices, Loader2, Play, BookOpen, Film } from "lucide-react";
 import { setEntryStatus } from "@/actions/entry-status";
 import { BookCover } from "@/components/domain/visual-system";
+import { CoverImage } from "@/components/domain/cover-image";
 import { genreLabel } from "@/lib/recommendations/genres";
 import { rankSimilar } from "@/lib/recommendations/similarity";
 import { cn } from "@/lib/utils";
@@ -39,14 +40,12 @@ function startLabel(mediaType) {
 function Cover({ item, index, className }) {
   if (item.coverUrl) {
     return (
-      <div className={cn("overflow-hidden rounded-md border border-border bg-muted shadow-sm", className)}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={item.coverUrl}
-          alt=""
-          className="h-full w-full object-cover transition-transform duration-[600ms] ease-out group-hover:scale-[1.05]"
-        />
-      </div>
+      <CoverImage
+        src={item.coverUrl}
+        sizes="(max-width: 768px) 45vw, 220px"
+        className={cn("rounded-md border border-border bg-muted shadow-sm", className)}
+        imageClassName="object-cover transition-transform duration-[600ms] ease-out group-hover:scale-[1.05]"
+      />
     );
   }
   return (
