@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 import { BookCover } from "@/components/domain/visual-system";
+import { CoverImage } from "@/components/domain/cover-image";
 
 const STATUS_LABELS = {
   want_to_read: "想读",
@@ -24,10 +24,11 @@ export function BookCard({ entry, index }) {
       className="flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-accent"
     >
       {coverUrl ? (
-        <div className="size-10 shrink-0 overflow-hidden rounded-sm border border-border bg-muted shadow-sm">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={coverUrl} alt="" className="h-full w-full object-cover" />
-        </div>
+        <CoverImage
+          src={coverUrl}
+          sizes="40px"
+          className="size-10 shrink-0 rounded-sm border border-border bg-muted shadow-sm"
+        />
       ) : (
         <BookCover
           title={entry.title}

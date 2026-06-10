@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BookOpen, ChevronLeft, ChevronRight, Clapperboard, Clock3, PencilLine, RefreshCw, Search } from "lucide-react";
 import { BookCover, PanelTitle, StatLine } from "@/components/domain/visual-system";
+import { CoverImage } from "@/components/domain/cover-image";
 import { LogReadingModal } from "@/components/domain/log-reading-modal";
 import { StatusToggle } from "@/components/domain/status-toggle";
 import { DeleteEntryButton } from "@/components/domain/delete-entry-button";
@@ -75,14 +76,12 @@ function CoverThumb({ entry, title, variant = "navy", className }) {
   const coverUrl = explicitCover || fetchedCover;
   if (coverUrl) {
     return (
-      <div className={cn("shrink-0 overflow-hidden rounded-sm border border-border bg-muted shadow-sm", className)}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={coverUrl}
-          alt=""
-          className="h-full w-full object-cover transition-transform duration-[600ms] ease-out group-hover:scale-[1.05]"
-        />
-      </div>
+      <CoverImage
+        src={coverUrl}
+        sizes="96px"
+        className={cn("shrink-0 rounded-sm border border-border bg-muted shadow-sm", className)}
+        imageClassName="object-cover transition-transform duration-[600ms] ease-out group-hover:scale-[1.05]"
+      />
     );
   }
 
@@ -422,10 +421,11 @@ function NextPickCard({ recommendations, mediaType }) {
       <PanelTitle title={isMovie ? "下一部看这个？" : "下一本读这个？"} />
       <Link href={pick.href} className="mt-5 grid grid-cols-[84px_1fr] gap-4 no-underline">
         {pick.cover_url ? (
-          <div className="aspect-[2/3] w-20 overflow-hidden rounded-sm border border-border bg-muted">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={pick.cover_url} alt="" className="h-full w-full object-cover" loading="lazy" />
-          </div>
+          <CoverImage
+            src={pick.cover_url}
+            sizes="80px"
+            className="aspect-[2/3] w-20 rounded-sm border border-border bg-muted"
+          />
         ) : (
           <BookCover title={pick.title} variant={isMovie ? "blue" : "navy"} className="aspect-[2/3] w-20" />
         )}

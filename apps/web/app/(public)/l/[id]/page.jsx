@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CoverImage } from "@/components/domain/cover-image";
 import { getPublicList } from "@/lib/public-pages/data";
 import { slugifyTitle } from "@/lib/public-pages/slug";
 
@@ -33,8 +34,7 @@ function ItemCard({ item }) {
     >
       <div className="aspect-[2/3] overflow-hidden border border-[var(--line)] bg-[var(--paper-deep)]">
         {item.cover_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img alt="" className="h-full w-full object-cover" src={item.cover_url} loading="lazy" />
+          <CoverImage src={item.cover_url} sizes="(max-width: 768px) 45vw, 240px" className="h-full w-full" />
         ) : null}
       </div>
       <div className="grid content-start gap-1">

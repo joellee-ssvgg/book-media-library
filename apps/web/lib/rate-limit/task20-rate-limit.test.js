@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createTask20RateLimitKey, shouldApplyTask20RateLimit, task20IpRateLimit, task20ProfileRateLimit, } from "./config";
+import { createTask20RateLimitKey, ipRateLimitForPath, shouldApplyTask20RateLimit, task20IpPageRateLimit, task20IpRateLimit, task20ProfileRateLimit, } from "./config";
 import { evaluateTask20RateLimit } from "./store";
 function createMemoryStore() {
     const counts = new Map();
@@ -103,5 +103,62 @@ describe("Task20 rate limit", () => {
         expect(shouldApplyTask20RateLimit("/sw.js")).toBe(false);
         expect(shouldApplyTask20RateLimit("/pwa-icon.svg")).toBe(false);
         expect(shouldApplyTask20RateLimit("/_next/static/chunks/app.js")).toBe(false);
+    });
+    it("keeps the strict IP budget for API and auth endpoints only", () => {
+        expect(ipRateLimitForPath("/api/search")).toBe(task20IpRateLimit);
+        expect(ipRateLimitForPath("/api/add-entry")).toBe(task20IpRateLimit);
+        expect(ipRateLimitForPath("/auth/sign-in")).toBe(task20IpRateLimit);
+        expect(ipRateLimitForPath("/dashboard")).toBe(task20IpPageRateLimit);
+        expect(ipRateLimitForPath("/")).toBe(task20IpPageRateLimit);
+        expect(ipRateLimitForPath("/u/reader_1")).toBe(task20IpPageRateLimit);
+    });
+    it("counts page navigations against a separate looser bucket than API calls", async () => {
+        const store = createMemoryStore();
+        for (let i = 1; i <= 21; i += 1) {
+            await evaluateTask20RateLimit({
+                ip: "203.0.113.8",
+                now,
+                store,
+                ipRule: task20IpPageRateLimit,
+            });
+        }
+        const pageDecision = await evaluateTask20RateLimit({
+            ip: "203.0.113.8",
+            now,
+            store,
+            ipRule: task20IpPageRateLimit,
+        });
+        expect(pageDecision.allowed).toBe(true);
+        expect(pageDecision.count).toBe(22);
+        const apiDecision = await evaluateTask20RateLimit({
+            ip: "203.0.113.8",
+            now,
+            store,
+            ipRule: task20IpRateLimit,
+        });
+        expect(apiDecision.allowed).toBe(true);
+        expect(apiDecision.count).toBe(1);
+    });
+    it("rejects the 121st page navigation in a minute", async () => {
+        const store = createMemoryStore();
+        let decision;
+        for (let i = 1; i <= 120; i += 1) {
+            decision = await evaluateTask20RateLimit({
+                ip: "203.0.113.8",
+                now,
+                store,
+                ipRule: task20IpPageRateLimit,
+            });
+        }
+        expect(decision.allowed).toBe(true);
+        const rejected = await evaluateTask20RateLimit({
+            ip: "203.0.113.8",
+            now,
+            store,
+            ipRule: task20IpPageRateLimit,
+        });
+        expect(rejected.allowed).toBe(false);
+        expect(rejected.scope).toBe("ip");
+        expect(rejected.count).toBe(121);
     });
 });

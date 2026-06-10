@@ -4,6 +4,14 @@ export const task20IpRateLimit = {
     limit: 20,
     windowSeconds: 60,
 };
+// Page navigations count against a separate, looser bucket: Next.js prefetches
+// links aggressively, so the strict API budget would lock out normal browsing.
+export const task20IpPageRateLimit = {
+    scope: "ip",
+    keyPrefix: "rl:ip:nav",
+    limit: 120,
+    windowSeconds: 60,
+};
 export const task20ProfileRateLimit = {
     scope: "profile",
     keyPrefix: "rl:profile",
@@ -12,8 +20,13 @@ export const task20ProfileRateLimit = {
 };
 export const task20RateLimitRules = {
     ip: task20IpRateLimit,
+    ipPage: task20IpPageRateLimit,
     profile: task20ProfileRateLimit,
 };
+const strictIpPathPattern = /^\/(api|auth)(\/|$)/;
+export function ipRateLimitForPath(pathname) {
+    return strictIpPathPattern.test(pathname) ? task20IpRateLimit : task20IpPageRateLimit;
+}
 const staticAssetPattern = /\.(?:css|js|mjs|map|svg|png|jpg|jpeg|gif|webp|ico|txt|xml|json|woff|woff2)$/i;
 export function shouldApplyTask20RateLimit(pathname) {
     if (pathname.startsWith("/_next/")

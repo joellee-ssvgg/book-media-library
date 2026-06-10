@@ -96,7 +96,7 @@ async function ensurePrivateShellProfileViaRpc(supabase) {
 async function selectPrivateShellProfile(supabase, authUserId) {
   const { data, error } = await supabase
     .from("profiles")
-    .select("username")
+    .select("username, display_name, avatar_url")
     .eq("auth_user_id", authUserId)
     .is("deleted_at", null)
     .order("created_at", { ascending: true })
@@ -121,7 +121,7 @@ async function insertPrivateShellProfile(supabase, user, username) {
   const { data, error } = await supabase
     .from("profiles")
     .insert(payload)
-    .select("username")
+    .select("username, display_name, avatar_url")
     .single();
 
   return { data, error };

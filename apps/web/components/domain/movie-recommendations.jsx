@@ -5,20 +5,18 @@ import { useRouter } from "next/navigation";
 import { Sparkles, Plus, Check, Loader2 } from "lucide-react";
 import { loadMovieRecommendationsAction, addRecommendedMovieAction } from "@/actions/recommendations";
 import { BookCover } from "@/components/domain/visual-system";
+import { CoverImage } from "@/components/domain/cover-image";
 import { cn } from "@/lib/utils";
 
 function Poster({ title, posterUrl, index }) {
   if (posterUrl) {
     return (
-      <div className="aspect-[2/3] w-full overflow-hidden rounded-md border border-border bg-muted shadow-sm">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={posterUrl}
-          alt=""
-          className="h-full w-full object-cover transition-transform duration-[600ms] ease-out group-hover:scale-[1.05]"
-          loading="lazy"
-        />
-      </div>
+      <CoverImage
+        src={posterUrl}
+        sizes="(max-width: 768px) 40vw, 180px"
+        className="aspect-[2/3] w-full rounded-md border border-border bg-muted shadow-sm"
+        imageClassName="object-cover transition-transform duration-[600ms] ease-out group-hover:scale-[1.05]"
+      />
     );
   }
   const variants = ["navy", "blue", "forest", "red", "gold", "cream"];

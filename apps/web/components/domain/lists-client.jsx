@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Globe2, LockKeyhole, MoreHorizontal, Link2, Trash2, Loader2, Check } from "lucide-react";
 import { BookCover } from "@/components/domain/visual-system";
+import { CoverImage } from "@/components/domain/cover-image";
 import { deleteList } from "@/actions/lists";
 import { cn } from "@/lib/utils";
 
@@ -89,10 +90,12 @@ function ListCard({ list }) {
       <div className="mt-6 grid grid-cols-4 gap-3">
         {covers.slice(0, 4).map((cover, index) =>
           cover ? (
-            <div key={index} className="aspect-[2/3] w-full overflow-hidden rounded-md border border-border bg-muted">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={cover} alt="" className="h-full w-full object-cover" loading="lazy" />
-            </div>
+            <CoverImage
+              key={index}
+              src={cover}
+              sizes="120px"
+              className="aspect-[2/3] w-full rounded-md border border-border bg-muted"
+            />
           ) : (
             <BookCover key={index} className="aspect-[2/3] w-full opacity-70" title="" variant={VARIANTS[index % VARIANTS.length]} />
           )

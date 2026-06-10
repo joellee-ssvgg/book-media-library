@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, BookOpen, Film, Plus, Check, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CoverImage } from "@/components/domain/cover-image";
 import { CountryPicker } from "@/components/domain/country-picker";
 import { lookupCountryCode } from "@/lib/reading-map/country-lookup";
 
@@ -134,8 +135,7 @@ function SearchResultCard({ item, onAdd, added }) {
     <div className="flex gap-3 border-b border-border px-1 py-3 last:border-0">
       <div className="h-16 w-11 shrink-0 overflow-hidden rounded bg-muted shadow-sm">
         {item.coverUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={item.coverUrl} alt="" className="h-full w-full object-cover" />
+          <CoverImage src={item.coverUrl} sizes="44px" className="h-full w-full" />
         )}
       </div>
       <div className="flex-1 min-w-0">

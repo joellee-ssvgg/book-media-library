@@ -25,27 +25,26 @@ async function loadPrivateShellProfile() {
     redirect("/auth/sign-in");
   }
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-  if (authError || !user) {
+  // proxy.js already refreshed the session for this request, so the JWT can be
+  // verified locally (JWKS) without another round trip to the auth server.
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const claims = data?.claims;
+  if (authError || !claims?.sub) {
     redirect("/auth/sign-in");
   }
 
-  const profile = await ensurePrivateShellProfile(supabase, user);
+  const user = {
+    id: claims.sub,
+    email: typeof claims.email === "string" ? claims.email : null,
+    user_metadata: claims.user_metadata ?? {},
+  };
 
-  const { data: profileRow } = await supabase
-    .from("profiles")
-    .select("display_name, avatar_url")
-    .eq("username", profile.username)
-    .is("deleted_at", null)
-    .maybeSingle();
+  const profile = await ensurePrivateShellProfile(supabase, user);
 
   return {
     username: profile.username,
-    displayName: resolveDisplayName(profileRow, user, profile.username),
-    avatarUrl: profileRow?.avatar_url ?? "",
+    displayName: resolveDisplayName(profile, user, profile.username),
+    avatarUrl: profile.avatar_url ?? "",
   };
 }
 

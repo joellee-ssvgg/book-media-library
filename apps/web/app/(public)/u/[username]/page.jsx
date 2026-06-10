@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CoverImage } from "@/components/domain/cover-image";
 import { getPublicProfile } from "@/lib/public-pages/data";
 import { slugifyTitle } from "@/lib/public-pages/slug";
 export const revalidate = 60;
@@ -31,8 +32,7 @@ function EntryCard({ entry, featured = false }) {
     return (<a className={`grid gap-3 border border-[var(--line)] bg-[hsl(var(--card))] p-4 text-[var(--ink)] ${featured ? "md:grid-cols-[92px_1fr]" : ""}`} href={workHref(entry)}>
       {featured ? (<div className="aspect-[2/3] border border-[var(--line)] bg-[var(--paper-deep)]">
           {entry.cover_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img alt="" className="h-full w-full object-cover" src={entry.cover_url}/>) : null}
+            <CoverImage src={entry.cover_url} sizes="92px" className="h-full w-full"/>) : null}
         </div>) : null}
       <div className="grid content-start gap-2">
         <p className="text-xs uppercase tracking-[0.16em] text-[var(--ink-faint)]">
@@ -87,8 +87,7 @@ export default async function PublicProfilePage({ params }) {
           <div className="flex items-center gap-4">
             <div className="grid size-16 place-items-center overflow-hidden rounded-full border border-[var(--line)] bg-[var(--paper-deep)] text-xl font-semibold text-[var(--blue)]">
               {data.profile.avatar_url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img alt="" className="h-full w-full object-cover" src={data.profile.avatar_url}/>) : (name.slice(0, 1).toUpperCase())}
+        <CoverImage src={data.profile.avatar_url} sizes="64px" className="h-full w-full"/>) : (name.slice(0, 1).toUpperCase())}
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.18em] text-[var(--ink-faint)]">

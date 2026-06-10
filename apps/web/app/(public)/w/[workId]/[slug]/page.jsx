@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CoverImage } from "@/components/domain/cover-image";
 import { getPublicWork } from "@/lib/public-pages/data";
 import { isUuid } from "@/lib/public-pages/slug";
 export const revalidate = 60;
@@ -76,8 +77,7 @@ export default async function PublicWorkPage({ params }) {
         <section className="grid gap-6 lg:grid-cols-[220px_1fr]">
           <div className="aspect-[2/3] border border-[var(--line)] bg-[var(--paper-deep)]">
             {data.edition?.cover_url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img alt="" className="h-full w-full object-cover" src={data.edition.cover_url}/>) : null}
+        <CoverImage src={data.edition.cover_url} sizes="220px" priority className="h-full w-full"/>) : null}
           </div>
 
           <div className="grid content-start gap-5">
