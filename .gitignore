@@ -7,6 +7,7 @@ out/
 dist/
 build/
 coverage/
+test-results/
 
 .env
 .env.*
@@ -20,3 +21,13 @@ yarn-error.log*
 
 .vercel/
 .supabase/
+.pnpm-store/
+.uv-cache/
+.uv-tools/
+.hallmark/
+
+# 本地文档资料，不入库
+论文/
+外部Agent执行工作包/
+外部Agent执行工作包.zip
+/*.pdf
