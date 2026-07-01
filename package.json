@@ -36,6 +36,7 @@
     "overrides": {
       "@tootallnate/once": "2.0.1",
       "@vercel/static-config>ajv": "8.18.0",
+      "d3-color": "3.1.0",
       "minimatch@>=10.0.0 <10.2.5": "10.2.5",
       "path-to-regexp@>=4.0.0 <6.3.0": "6.3.0",
       "path-to-regexp@>=8.0.0 <8.4.0": "8.4.0",
