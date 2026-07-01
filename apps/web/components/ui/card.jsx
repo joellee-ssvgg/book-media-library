@@ -1,0 +1,37 @@
+import { cn } from "@/lib/utils";
+
+function Card({ className, size = "default", ...props }) {
+  return (
+    <div
+      className={cn(
+        "ink-card text-card-foreground",
+        size === "sm" && "p-4",
+        size === "default" && "p-6",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+function CardHeader({ className, ...props }) {
+  return <div className={cn("flex flex-col space-y-1.5 pb-4", className)} {...props} />;
+}
+
+function CardTitle({ className, ...props }) {
+  return <h3 className={cn("font-display text-xl font-semibold leading-none text-[var(--ink)]", className)} {...props} />;
+}
+
+function CardDescription({ className, ...props }) {
+  return <p className={cn("text-sm text-muted-foreground", className)} {...props} />;
+}
+
+function CardContent({ className, ...props }) {
+  return <div className={cn("", className)} {...props} />;
+}
+
+function CardFooter({ className, ...props }) {
+  return <div className={cn("flex items-center pt-4", className)} {...props} />;
+}
+
+export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter };

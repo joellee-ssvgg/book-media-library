@@ -1,12 +1,13 @@
 # Task 01 Startup Blockers
 
-更新时间: 2026-05-21
+更新时间: 2026-05-22
 
 ## 依据
 
 - `外部Agent执行工作包` §2.1: Task 01 开工前必须确认仓库、环境、Node/pnpm/Git/Docker、Supabase dev、`.env`、提交渠道与安全红线。
 - `外部Agent执行工作包` §7: 阻断项任一缺失时停工并升级，不做替代方案。
 - `P0 环境与凭据 checklist` §1-§4: P0 需要 Supabase、Vercel、GitHub、Upstash、Sentry、TMDB API、环境变量与本地启动序列。
+- `ADR-056-task06-provider-adapter-cache`: P0 provider surface includes Open Library, Google Books, TMDB Movie, and manual entry.
 
 ## 当前已确认可用
 
@@ -20,7 +21,7 @@
 | GitHub CLI | 已登录 `joellee-ssvgg`，具备 `repo` 与 `workflow` scope |
 | GitHub 仓库 | 已创建私有仓库 `joellee-ssvgg/book-media-library`，本地 `origin` 已配置 |
 | Next.js 骨架 | `apps/web` 已生成，Next `16.2.6` |
-| Vercel CLI | 已作为 root devDependency 安装，`pnpm task01:check` 确认 Vercel CLI `54.1.0` 且已认证 |
+| Vercel CLI | 已作为 root devDependency 安装，`pnpm task01:check` 确认 Vercel CLI `54.3.0` 且已认证 |
 | 环境变量模板 | `.env.example` 已生成，不含真实密钥 |
 | 本地 dev 环境文件 | `.env.local` 已创建且被 `.gitignore` 忽略；已填入 Task 01 必需 dev 环境变量 |
 
@@ -34,23 +35,23 @@
 | Vercel CLI 认证误判 | 已修正 `scripts/check-task-01-readiness.sh`，直接用 `whoami --non-interactive` 验证本机登录态 |
 | Supabase CLI 未登录 / 无项目访问 | 已完成 `supabase login --no-browser`，`supabase projects list` 可列出项目 `bnmaolnecfywfbozsrxx` |
 | `.env.local` 文件缺失 | 已创建 `.env.local`，权限为 `600`，已写入真实 Supabase dev 值 |
-| 外部 API / SaaS 密钥缺失 | 已写入 `TMDB_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN` |
+| 外部 API / SaaS 密钥缺失 | 已写入 `TMDB_API_KEY`, `GOOGLE_BOOKS_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN`；Google Books API 只读请求返回 `200` 且有结果 |
 
 ## 当前未解除
 
 | 项 | 当前证据 |
 | --- | --- |
-| 无 | 2026-05-21 运行 `pnpm task01:check` 返回 `READY: Task 01 startup gates passed. warnings=0` |
+| 无 | `pnpm task01:check` 返回 `READY: Task 01 startup gates passed. warnings=0` |
 
 ## 阻断项登记
 
 | 阻断项 | 影响的 Task | 期望由谁解除 | 已尝试的替代方案 |
 | --- | --- | --- | --- |
-| 无 | Task 01 启动门禁 | 已解除 | 未使用替代方案 |
+| 无 | - | - | - |
 
 ## 当前结论
 
-Task 01 启动门禁当前通过。GitHub 私有仓库、本地 `main`/`dev` 远端、Docker daemon、Supabase CLI、Vercel CLI、`.env.local`、TMDB、Upstash、Sentry 当前检查均通过。
+Task 01 启动门禁当前可视为通过。GitHub 私有仓库、本地 `main`/`dev` 远端、Docker daemon、Supabase CLI、Vercel CLI、`.env.local`、TMDB、Google Books、Upstash、Sentry 当前检查均通过。
 
 ## 下一步入口
 

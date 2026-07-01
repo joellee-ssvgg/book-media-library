@@ -1,0 +1,51 @@
+import { pickSearchConfigByCJKRatio } from "./search-config";
+export const bookRegistry = {
+    id: "book",
+    labelKey: "media.book.label",
+    iconEmoji: "📖",
+    statusOptions: [
+        {
+            key: "want_to_read",
+            labelKey: "media.book.status.want_to_read",
+            isTerminal: false,
+            isActive: false,
+            group: "to_do",
+        },
+        {
+            key: "reading",
+            labelKey: "media.book.status.reading",
+            isTerminal: false,
+            isActive: true,
+            group: "in_progress",
+        },
+        {
+            key: "finished",
+            labelKey: "media.book.status.finished",
+            isTerminal: true,
+            isActive: false,
+            group: "complete",
+        },
+        {
+            key: "abandoned",
+            labelKey: "media.book.status.abandoned",
+            isTerminal: true,
+            isActive: false,
+            group: "abandoned",
+        },
+    ],
+    defaultStatus: "want_to_read",
+    ratingScale: { minX10: 5, maxX10: 50, stepX10: 5 },
+    defaultProgressModel: "book_page_progress",
+    supportedEditionTypes: ["paperback", "hardcover", "ebook", "audiobook"],
+    editionTypeToProgressModel: {
+        paperback: "book_page_progress",
+        hardcover: "book_page_progress",
+        ebook: "book_page_progress",
+        audiobook: "audiobook_minute_progress",
+    },
+    searchProviders: ["openlibrary", "googlebooks", "manual"],
+    manualEntryAllowed: true,
+    annotationLocationKind: "book",
+    pickSearchConfig: pickSearchConfigByCJKRatio,
+    publicSummaryFields: ["canonical_title", "first_release_year", "cover_url"],
+};

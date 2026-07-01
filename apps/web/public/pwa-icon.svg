@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Book media library icon">
+  <rect width="512" height="512" rx="96" fill="#1f3d35"/>
+  <path d="M126 132c0-20 16-36 36-36h228v284H162c-20 0-36-16-36-36V132Z" fill="#fffdf8"/>
+  <path d="M162 96h228v48H162c-9 0-16 7-16 16s7 16 16 16h228v204H162c-29 0-52-23-52-52V148c0-29 23-52 52-52Z" fill="#f0e8d8"/>
+  <path d="M192 220h156M192 266h120M192 312h148" stroke="#1f3d35" stroke-width="24" stroke-linecap="round"/>
+  <circle cx="340" cy="164" r="24" fill="#b96836"/>
+</svg>

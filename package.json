@@ -13,11 +13,38 @@
     "lint": "pnpm --dir apps/web lint",
     "typecheck": "pnpm --dir apps/web typecheck",
     "test": "pnpm --dir apps/web test",
+    "test:mspf:schema": "pnpm tsx scripts/validate-mspf.ts test/fixtures/valid-mspf.json",
+    "p0:redline": "pnpm tsx scripts/p0-redline-acceptance.ts",
+    "p0:artifacts": "pnpm tsx scripts/p0-redline-acceptance.ts --write-artifacts",
+    "p0:check": "pnpm task20:check && pnpm p0:redline",
     "task01:check": "./scripts/check-task-01-readiness.sh",
+    "check:all": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:mspf:schema && pnpm db:migrate:smoke && pnpm db:test:rls && pnpm build",
+    "task19:check": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:mspf:schema && pnpm db:migrate:smoke && pnpm db:test:rls",
+    "task20:check": "pnpm check:all",
+    "task20:rate-limit:smoke": "pnpm tsx scripts/task20-rate-limit-smoke.ts",
+    "task20:sentry:smoke": "pnpm tsx scripts/task20-sentry-smoke.ts",
     "db:migrate:smoke": "supabase db reset",
-    "db:test:rls": "supabase test db test/rls"
+    "db:test:rls": "supabase test db test/rls",
+    "db:backfill:genres": "tsx --tsconfig scripts/tsconfig.backfill.json scripts/task32-backfill-genres.ts"
   },
   "devDependencies": {
-    "vercel": "^54.1.0"
+    "ts-blank-space": "^0.9.0",
+    "tsx": "4.21.0",
+    "vercel": "^54.3.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@tootallnate/once": "2.0.1",
+      "@vercel/static-config>ajv": "8.18.0",
+      "d3-color": "3.1.0",
+      "minimatch@>=10.0.0 <10.2.5": "10.2.5",
+      "path-to-regexp@>=4.0.0 <6.3.0": "6.3.0",
+      "path-to-regexp@>=8.0.0 <8.4.0": "8.4.0",
+      "postcss": "8.5.15",
+      "smol-toml": "1.6.1",
+      "srvx": "0.11.13",
+      "tar": "7.5.15",
+      "undici": "6.25.0"
+    }
   }
 }
